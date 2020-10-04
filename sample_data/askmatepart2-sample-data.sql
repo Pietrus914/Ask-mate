@@ -65,7 +65,7 @@ CREATE TABLE tag (
 );
 
 DROP TABLE IF EXISTS public.user;
-CREATE TABLE user (
+CREATE TABLE forum_user (
     id serial NOT NULL,
     mail text,
     submission_time timestamp without time zone,
@@ -109,7 +109,7 @@ ALTER TABLE ONLY question_tag
 ALTER TABLE ONLY tag
     ADD CONSTRAINT pk_tag_id PRIMARY KEY (id);
 
-ALTER TABLE ONLY user
+ALTER TABLE ONLY forum_user
     ADD CONSTRAINT fk_user_id PRIMARY KEY (id);
 
 ALTER TABLE ONLY user_question
@@ -238,3 +238,43 @@ SELECT pg_catalog.setval('tag_id_seq', 3, true);
 INSERT INTO question_tag VALUES (0, 1);
 INSERT INTO question_tag VALUES (1, 3);
 INSERT INTO question_tag VALUES (2, 3);
+
+INSERT INTO forum_user VALUES (0, 'witam@gmail.com', '2017-04-28 16:49:00', 4, 5, 8, 0);
+INSERT INTO forum_user VALUES (1, 'matiw@gmail.com', '2016-04-28 16:49:00', 4, 5, 5, 0);
+
+
+SELECT pg_catalog.setval('forum_user_id_seq', 2, true);
+
+INSERT INTO user_question VALUES (0, 0);
+INSERT INTO user_question VALUES (1, 0);
+INSERT INTO user_question VALUES (2, 0);
+INSERT INTO user_question VALUES (3, 0);
+INSERT INTO user_question VALUES (4, 1);
+INSERT INTO user_question VALUES (5, 1);
+INSERT INTO user_question VALUES (6, 1);
+INSERT INTO user_question VALUES (7, 1);
+
+INSERT INTO user_answer VALUES (1, 0);
+INSERT INTO user_answer VALUES (2, 0);
+INSERT INTO user_answer VALUES (3, 0);
+INSERT INTO user_answer VALUES (4, 0);
+INSERT INTO user_answer VALUES (5, 0);
+INSERT INTO user_answer VALUES (6, 1);
+INSERT INTO user_answer VALUES (7, 1);
+INSERT INTO user_answer VALUES (8, 1);
+INSERT INTO user_answer VALUES (9, 1);
+INSERT INTO user_answer VALUES (10, 1);
+
+INSERT INTO user_comment VALUES (1, 0);
+INSERT INTO user_comment VALUES (2, 0);
+INSERT INTO user_comment VALUES (3, 0);
+INSERT INTO user_comment VALUES (4, 0);
+INSERT INTO user_comment VALUES (5, 0);
+INSERT INTO user_comment VALUES (6, 0);
+INSERT INTO user_comment VALUES (7, 0);
+INSERT INTO user_comment VALUES (8, 0);
+INSERT INTO user_comment VALUES (9, 1);
+INSERT INTO user_comment VALUES (10, 1);
+INSERT INTO user_comment VALUES (11, 1);
+INSERT INTO user_comment VALUES (12, 1);
+INSERT INTO user_comment VALUES (13, 1);
