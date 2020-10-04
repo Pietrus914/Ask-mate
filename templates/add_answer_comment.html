@@ -1,0 +1,16 @@
+{#{% extends 'layout_comment.html' %}#}
+{##}
+{##}
+{#{% block title %}Add comment to {{ item_type }}{% endblock %}#}
+{##}
+{##}
+{#{% block item %}#}
+{#    <h1>{{ item_type }}</h1>#}
+{#    <p>{{ item.message }}</p>#}
+{#{% endblock %}#}
+{##}
+{#{% block action %}action="{{ url_for(url, answer_id=item.id) }}"{% endblock %}#}
+{##}
+{#{% block message %}Write your comment to {{ item_type }}:{% endblock %}#}
+{##}
+{#{% block  hidden %}name="{{ item_type }}_id" value="{{ item.id }}"{% endblock %}#}

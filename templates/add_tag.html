@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block page_title %}Add tag{% endblock %}
+
+{% block content %}
+    <div>
+        <form action="{{ url_for('add_tag', question_id=question_id) }}" method="POST">
+            <label for="tag_message">Write your tag:</label><br>
+            <textarea id="tag_message"  rows="1" type="text" maxlength="500" name="tag_message" placeholder="your_tag"></textarea><br>
+            <p>Or select from list:</p>
+            <select id="tag_message" name="tag_message">
+                {% for tags in all_tags %}
+                    <option value={{ tags.id }}>{{ tags.name }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <input class="forward" type="submit" value="&rarr; Add tag">
+        </form>
+    </div>
+{% endblock %}
