@@ -15,6 +15,10 @@ ALTER TABLE IF EXISTS ONLY public.question_tag DROP CONSTRAINT IF EXISTS pk_ques
 ALTER TABLE IF EXISTS ONLY public.question_tag DROP CONSTRAINT IF EXISTS fk_question_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.tag DROP CONSTRAINT IF EXISTS pk_tag_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.question_tag DROP CONSTRAINT IF EXISTS fk_tag_id CASCADE;
+ALTER TABLE IF EXISTS ONLY public.user DROP CONSTRAINT IF EXISTS fk_user_id CASCADE;
+ALTER TABLE IF EXISTS ONLY public.user_question DROP CONSTRAINT IF EXISTS fk_tag_id CASCADE;
+ALTER TABLE IF EXISTS ONLY public.user_answer DROP CONSTRAINT IF EXISTS fk_tag_id CASCADE;
+ALTER TABLE IF EXISTS ONLY public.user_comment DROP CONSTRAINT IF EXISTS fk_tag_id CASCADE;
 
 DROP TABLE IF EXISTS public.question;
 CREATE TABLE question (
@@ -60,6 +64,34 @@ CREATE TABLE tag (
     name text
 );
 
+DROP TABLE IF EXISTS public.user;
+CREATE TABLE user (
+    id serial NOT NULL,
+    mail text,
+    submission_time timestamp without time zone,
+    number_of_question int,
+    number_of_answer int,
+    number_of_comment int,
+    reputation int
+);
+
+DROP TABLE IF EXISTS public.user_question;
+CREATE TABLE user_question (
+    question_id integer NOT NULL,
+    user_id     integer NOT NULL
+);
+
+DROP TABLE IF EXISTS public.user_answer;
+CREATE TABLE user_answer(
+    answer_id integer NOT NULL,
+    user_id   integer NOT NULL
+);
+
+DROP TABLE IF EXISTS public.user_comment;
+CREATE TABLE user_comment(
+    comment_id integer NOT NULL,
+    user_id   integer NOT NULL
+);
 
 ALTER TABLE ONLY answer
     ADD CONSTRAINT pk_answer_id PRIMARY KEY (id);
@@ -70,11 +102,24 @@ ALTER TABLE ONLY comment
 ALTER TABLE ONLY question
     ADD CONSTRAINT pk_question_id PRIMARY KEY (id);
 
+
 ALTER TABLE ONLY question_tag
     ADD CONSTRAINT pk_question_tag_id PRIMARY KEY (question_id, tag_id);
 
 ALTER TABLE ONLY tag
     ADD CONSTRAINT pk_tag_id PRIMARY KEY (id);
+
+ALTER TABLE ONLY user
+    ADD CONSTRAINT fk_user_id PRIMARY KEY (id);
+
+ALTER TABLE ONLY user_question
+    ADD CONSTRAINT fk_user_question_id PRIMARY KEY (question_id, user_id);
+
+ALTER TABLE ONLY user_answer
+    ADD CONSTRAINT pk_user_answer_id PRIMARY KEY (answer_id, user_id);
+
+ALTER TABLE ONLY user_comment
+    ADD CONSTRAINT pk_user_comment_id PRIMARY KEY (comment_id, user_id);
 
 ALTER TABLE ONLY comment
     ADD CONSTRAINT fk_answer_id FOREIGN KEY (answer_id) REFERENCES answer(id);
@@ -90,6 +135,8 @@ ALTER TABLE ONLY comment
 
 ALTER TABLE ONLY question_tag
     ADD CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES tag(id);
+
+
 
 INSERT INTO question VALUES (0, '2017-04-28 08:29:00', 29, 7, 'How to make lists in Python?', 'I am totally new to this, any hints?', 'uploads/translate.png');
 INSERT INTO question VALUES (1, '2017-04-29 09:19:00', 15, 9, 'Wordpress loading multiple jQuery Versions', 'I developed a plugin that uses the jquery booklet plugin (http://builtbywill.com/booklet/#/) this plugin binds a function to $ so I cann call $(".myBook").booklet();
