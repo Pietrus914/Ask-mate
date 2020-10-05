@@ -258,8 +258,11 @@ def new_question_comment(question_id):
     if request.method == "POST":
         details = dict(request.form)
         details["submission_time"] = util.get_current_date_time()
-
+        # if 'email' in session:
+        #     details["user_id"] = data_manager.get_user_id_by_mail(session["mail"])
+        details["user_id"] = data_manager.get_user_id_by_mail("witam@gmail.com")
         data_manager.add_question_comment(details)
+
         return redirect(url_for("display_question", question_id=question_id))
     if request.method == "GET":
         question = data_manager.get_question_by_id(question_id)

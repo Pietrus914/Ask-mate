@@ -264,8 +264,8 @@ def get_comment_by_id(cursor: RealDictCursor, comment_id: int):
 #         """
 def add_question_comment(cursor: RealDictCursor, details: dict):
     query = f"""
-        INSERT INTO comment (question_id, message, submission_time)
-        VALUES (%(question_id)s, %(comment_message)s, %(submission_time)s )
+        INSERT INTO comment (question_id, message, submission_time, user_id )
+        VALUES (%(question_id)s, %(comment_message)s, %(submission_time)s , %(user_id)s)
         """
     cursor.execute(query, details)
     return
@@ -500,3 +500,13 @@ def check_for_user(cursor: RealDictCursor, email: str):
         """
     cursor.execute(query, email)
     return cursor.rowcount > 0
+
+
+@database_common.connection_handler
+def get_user_id_by_mail(cursor: RealDictCursor, mail):
+    query = f"""
+        SELECT id 
+        FROM forum_user
+        WHERE mail = '{mail}'"""
+    cursor.execute(query)
+    return cursor.fetchone()["id"]
