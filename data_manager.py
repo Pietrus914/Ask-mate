@@ -492,7 +492,7 @@ def get_tag_to_list(cursor: RealDictCursor):
 
 
 @database_common.connection_handler
-def check_for_user(cursor: RealDictCursor, email: str):
+def check_for_user(cursor: RealDictCursor, email: str):   # ten email powinien być dict
     query = """
         SELECT *
         FROM forum_user
@@ -503,10 +503,11 @@ def check_for_user(cursor: RealDictCursor, email: str):
 
 
 @database_common.connection_handler
-def get_user_id_by_mail(cursor: RealDictCursor, mail):
+def get_user_id_by_mail(cursor: RealDictCursor, mail: str):
     query = f"""
         SELECT id 
         FROM forum_user
-        WHERE mail = '{mail}'"""
-    cursor.execute(query)
+        WHERE mail = %(mail)s"""
+
+    cursor.execute(query, {'mail': mail})
     return cursor.fetchone()["id"]
