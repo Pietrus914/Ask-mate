@@ -472,6 +472,16 @@ def get_question_id_by_tag_id(cursor: RealDictCursor, tag_id: int):
     cursor.execute(query)
     return cursor.fetchone()["question_id"]
 
+@database_common.connection_handler
+def get_tag_id_by_name(cursor: RealDictCursor, tag_name: str):
+    query = f"""
+        SELECT id 
+        FROM tag
+        WHERE name = '{tag_name}'
+        """
+    cursor.execute(query)
+    return cursor.fetchone()
+
 
 @database_common.connection_handler
 def delete_tag(cursor: RealDictCursor, tag_id: int):
@@ -490,6 +500,15 @@ def get_tag_to_list(cursor: RealDictCursor):
     cursor.execute(query)
     return cursor.fetchall()
 
+@database_common.connection_handler
+def get_tag_from_question(cursor: RealDictCursor):
+    query = f"""
+        SELECT "name"
+        FROM tag
+        INNER JOIN question_tag ON tag.id=question_tag.tag_id
+        """
+    cursor.execute(query)
+    return cursor.fetchall()
 
 @database_common.connection_handler
 def check_for_user(cursor: RealDictCursor, email: str):
