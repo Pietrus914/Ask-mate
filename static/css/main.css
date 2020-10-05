@@ -48,6 +48,15 @@ header {
     top: 0;
     left: 0;
 }
+#signup {
+    background-color: rgba(200, 195, 195, 0.8);
+    padding: 10px;
+    margin-top: 5vh;
+    color: #31434f;
+    position: fixed;
+    top: 0;
+    right: 0;
+}
 
 h2 {
     margin: 10px 0;

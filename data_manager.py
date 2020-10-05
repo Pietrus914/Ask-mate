@@ -489,3 +489,14 @@ def get_tag_to_list(cursor: RealDictCursor):
         """
     cursor.execute(query)
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def check_for_user(cursor: RealDictCursor, email: str):
+    query = """
+        SELECT *
+        FROM forum_user
+        WHERE mail = (%(email)s)
+        """
+    cursor.execute(query, email)
+    return cursor.rowcount > 0

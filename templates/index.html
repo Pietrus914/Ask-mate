@@ -11,6 +11,11 @@
     <header>
         <a id="header-title" href="{{url_for("main_page") }}">Question Forum</a>
     </header>
+    <div id="signup">
+        <a href="{{ url_for("registration_user") }}">Log In</a>
+        /
+        <a href="{{ url_for("registration_user") }}">Sign Up</a>
+    </div>
     <section>
         <h2 class="title text-center">{{ self.page_title() }}</h2>
     </section>

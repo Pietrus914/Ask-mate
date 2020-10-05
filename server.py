@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, send_from_directory
-import data_handler, connection, data_manager, util
+import data_manager, util
 import os
 
 app = Flask(__name__)
@@ -8,11 +8,12 @@ app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowan
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
 
-'''function to use when user can upload file'''
+
 def swap_image(uploaded_file):
+    """function to use when user can upload file"""
     if uploaded_file.filename != '':
         uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename))
-        return os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename) # question['image'] = ...
+        return os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename)  # question['image'] = ...
 
 
 @app.route("/")
@@ -47,13 +48,6 @@ def display_search_question():
             questions.append(data_manager.get_question_by_id(answer["question_id"]))
 
     return render_template("search_page.html", questions=questions, answers=answers_test, search_phrase=search_phrase)
-
-
-def display_time(s):
-    return data_handler.transform_timestamp(s)
-
-
-app.jinja_env.globals.update(display_time=display_time)
 
 
 @app.route("/uploads/<filename>")
@@ -250,7 +244,7 @@ def question_vote(question_id):
 def answer_vote(question_id, answer_id):
     post_result = dict(request.form)["vote_answer"]
     # print(post_result)
-    difference =  util.get_difference_of_votes(post_result)
+    difference = util.get_difference_of_votes(post_result)
     data_manager.update_answer_votes(answer_id, difference)
 
     return redirect(url_for("display_question", question_id=question_id))
@@ -268,8 +262,8 @@ def new_question_comment(question_id):
         question = data_manager.get_question_by_id(question_id)
         return render_template("add_comment.html",
                                item=question,
-                               item_type = "question",
-                               url = url_for('new_question_comment', question_id=question_id))
+                               item_type="question",
+                               url=url_for('new_question_comment', question_id=question_id))
                                # item_id = 'question_id')
 
 
@@ -293,7 +287,7 @@ def update_comment_get(comment_id):
         return render_template("update_comment.html",
                                comment=comment,
                                item=question,
-                               item_type = "question")
+                               item_type="question")
                                # url_forr = url_for('update_question_comment', question_id = question["id"]),
                                # url = 'update_comment_post')
 
@@ -306,13 +300,11 @@ def update_comment_get(comment_id):
                                # url='update_comment_post')
 
 
-
 @app.route('/comments/<comment_id>/delete')
 def delete_comment(comment_id):
     question_id = data_manager.get_question_id_by_comment_id(comment_id)
     data_manager.delete_comment(comment_id)
     return redirect(url_for("display_question", question_id=question_id))
-
 
 
 @app.route('/answer/<answer_id>/new-comment', methods=["GET", "POST"])
@@ -330,9 +322,8 @@ def new_answer_comment(answer_id):
         return render_template("add_comment.html",
                                item=answer,
                                item_type="answer",
-                               url = url_for('new_answer_comment', answer_id =answer_id ))
+                               url=url_for('new_answer_comment', answer_id=answer_id))
                                # item_id = 'answer_id')
-
 
 
 @app.route('/question/<question_id>/new-tag', methods=["GET", "POST"])
@@ -356,6 +347,20 @@ def delete_tag(tag_id):
     question_id = data_manager.get_question_id_by_tag_id(tag_id)
     data_manager.delete_tag(tag_id)
     return redirect(url_for("display_question", question_id=question_id))
+
+
+@app.route('/registration/<ver>')
+@app.route('/registration')
+def registration_user(ver=None):
+    return render_template("registration.html", ver=ver)
+
+
+@app.route('/registration/post', methods=["POST"])
+def registration_user_post():
+    email = dict(request.form)
+    if data_manager.check_for_user(email):
+        return redirect(url_for("registration_user", ver="exist"))
+    return redirect(url_for("main_page"))
 
 
 if __name__ == "__main__":
