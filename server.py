@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, request, send_from_directory
 import data_manager, util
-import os
+import os, bcrypt
 
 app = Flask(__name__)
 app.config['UPLOAD_PATH'] = 'uploads'
