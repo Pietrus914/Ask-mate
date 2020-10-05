@@ -1,8 +1,11 @@
-from flask import Flask, render_template, url_for, redirect, request, send_from_directory
+from flask import Flask, render_template, url_for, redirect, request, send_from_directory, make_response, session, escape
 import data_manager, util
-import os, bcrypt
+import os
+from bcrypt import checkpw
+
 
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
 app.config['UPLOAD_PATH'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowanego obrazu
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
