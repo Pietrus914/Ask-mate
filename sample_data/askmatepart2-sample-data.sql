@@ -64,7 +64,7 @@ CREATE TABLE tag (
     name text
 );
 
-DROP TABLE IF EXISTS public.user;
+DROP TABLE IF EXISTS public.forum_user;
 CREATE TABLE forum_user (
     id serial NOT NULL,
     mail text,
