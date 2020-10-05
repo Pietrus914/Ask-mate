@@ -29,7 +29,7 @@ CREATE TABLE question (
     title text,
     message text,
     image text,
-    user_id integer NOT NULL
+    user_id integer --NOT NULL
 );
 
 DROP TABLE IF EXISTS public.answer;
@@ -40,7 +40,7 @@ CREATE TABLE answer (
     question_id integer,
     message text,
     image text,
-    user_id integer NOT NULL
+    user_id integer --NOT NULL
 );
 
 DROP TABLE IF EXISTS public.comment;
@@ -48,7 +48,7 @@ CREATE TABLE comment (
     id serial NOT NULL,
     question_id integer,
     answer_id integer,
-    user_id integer NOT NULL,
+    user_id integer, --NOT NULL,
     message text,
     submission_time timestamp without time zone,
     edited_count integer
