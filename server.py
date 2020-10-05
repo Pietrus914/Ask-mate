@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, send_from_directory, make_response, session, escape
 import data_manager, util
 import os
-from bcrypt import checkpw
+from bcrypt import checkpw, hashpw, gensalt
 
 
 app = Flask(__name__)
