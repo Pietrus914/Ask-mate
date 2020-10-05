@@ -511,3 +511,12 @@ def get_user_id_by_mail(cursor: RealDictCursor, mail: str):
 
     cursor.execute(query, {'mail': mail})
     return cursor.fetchone()["id"]
+
+
+@database_common.connection_handler
+def get_all_users(cursor: RealDictCursor):
+    query = f"""
+        SELECT * 
+        FROM forum_user"""
+    cursor.execute(query)
+    return cursor.fetchall()
