@@ -265,9 +265,9 @@ def get_comment_by_id(cursor: RealDictCursor, comment_id: int):
 def add_question_comment(cursor: RealDictCursor, details: dict):
     query = f"""
         INSERT INTO comment (question_id, message, submission_time)
-        VALUES ({details["question_id"]}, '{details["comment_message"]}', '{details["submission_time"]}' )
+        VALUES (%(question_id)s, %(comment_message)s, %(submission_time)s )
         """
-    cursor.execute(query)
+    cursor.execute(query, details)
     return
 
 
@@ -275,15 +275,15 @@ def add_question_comment(cursor: RealDictCursor, details: dict):
 def update_comment(cursor: RealDictCursor, details: dict, comment_id):
     query = f"""
             UPDATE comment 
-            SET message = '{details["comment_message"]}', 
-                submission_time = '{details["submission_time"]}',
+            SET message = %(comment_message)s, 
+                submission_time = %(submission_time)s,
                 edited_count = CASE 
                     WHEN edited_count IS NULL  THEN 1
                     ELSE edited_count + 1
                 END
             WHERE id = {comment_id}
             """
-    cursor.execute(query)
+    cursor.execute(query, details)
     return
 
 
@@ -345,8 +345,8 @@ def get_question_id_by_comment_id(comment_id):
 def add_answer_comment(cursor: RealDictCursor, details: dict):
     query = f"""
         INSERT INTO comment (answer_id, message, submission_time)
-        VALUES ({details["answer_id"]}, '{details["comment_message"]}', '{details["submission_time"]}') """
-    cursor.execute(query)
+        VALUES (%(answer_id)s, %(comment_message)s, %(submission_time)s) """
+    cursor.execute(query,details)
     return
 
 
