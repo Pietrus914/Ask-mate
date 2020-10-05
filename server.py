@@ -349,5 +349,19 @@ def delete_tag(tag_id):
     return redirect(url_for("display_question", question_id=question_id))
 
 
+@app.route('/registration/<ver>')
+@app.route('/registration')
+def registration_user(ver=None):
+    return render_template("registration.html", ver=ver)
+
+
+@app.route('/registration/post', methods=["POST"])
+def registration_user_post():
+    email = dict(request.form)
+    if data_manager.check_for_user(email):
+        return redirect(url_for("registration_user", ver="exist"))
+    return redirect(url_for("main_page"))
+
+
 if __name__ == "__main__":
     app.run()
