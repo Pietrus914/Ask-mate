@@ -9,13 +9,13 @@
         <h2>List of Users</h2>
     </div>
         <div class="main">
-            <div class="table_headers">
+            <div class="table_users">
                 {% for header in table_headers %}
-                <div class="table_cell">{{ header }}</div>
+                <div class="table_headers">{{ header }}</div>
                 {% endfor %}
-            </div>
+{#            </div>#}
             {% for user in users %}
-            <div class="table_row">
+{#            <div class="table_row">#}
                 <div class="table_cell">{{ user.id }}</div>
                 <div class="table_cell">{{ user.mail }}</div>
                 <div class="table_cell">{{ user.reputation }}</div>
@@ -23,9 +23,9 @@
                 <div class="table_cell">{{ user.number_of_question }}</div>
                 <div class="table_cell">{{ user.number_of_answer }}</div>
                 <div class="table_cell">{{ user.number_of_comment }}</div>
-
-            </div>
             {% endfor %}
+            </div>
+
         </div>
 
 </div>
