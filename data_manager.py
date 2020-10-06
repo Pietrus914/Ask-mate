@@ -539,3 +539,11 @@ def get_all_users(cursor: RealDictCursor):
         FROM forum_user"""
     cursor.execute(query)
     return cursor.fetchall()
+
+@database_common.connection_handler
+def get_all_users_basic_info(cursor: RealDictCursor):
+    query = f"""
+        SELECT id, mail, reputation
+        FROM forum_user"""
+    cursor.execute(query)
+    return cursor.fetchall()
