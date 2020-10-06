@@ -510,7 +510,6 @@ def get_tag_from_question(cursor: RealDictCursor):
     cursor.execute(query)
     return cursor.fetchall()
 
-
 @database_common.connection_handler
 def check_for_user(cursor: RealDictCursor, email: str):   # ten email powinien być dict
     query = """
