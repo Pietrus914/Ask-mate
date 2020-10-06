@@ -78,6 +78,7 @@ def display_question(question_id):
     answers_headers = ["Votes' number", "Answer", "Submission time"]
     comment_headers = ["Submission time", "Message", "Edition counter"]
     question_tag = data_manager.get_tag_by_question_id(question_id)
+    users = data_manager.get_all_users_basic_info()
 
     return render_template("question.html", question=question,
                            answers=answers,
@@ -85,7 +86,8 @@ def display_question(question_id):
                            question_comments=question_comments,
                            comment_headers=comment_headers,
                            answer_comments=answer_comments,
-                           question_tag=question_tag
+                           question_tag=question_tag,
+                           users=users
                            )
 
 
@@ -391,7 +393,7 @@ def registration_user_post():
 
 
 @app.route('/users', methods=["GET"])
-def users():
+def display_users():
     # if 'user_id' in session:
     #     table_headers = ["ID", "User name", "Reputation", "Registration date",
     #                      "Added question", "Added answers", "Added comments"]
@@ -399,10 +401,10 @@ def users():
     #     return render_template('users.html', table_headers=table_headers, users=all_users)
     # else:
     #     redirect(url_for('login'))
-    table_headers = ["ID", "User name", "Reputation", "Registration date",
-                     "Added question", "Added answers", "Added comments"]
+    # table_headers = ["ID", "User name", "Reputation", "Registration date",
+    #                  "Added question", "Added answers", "Added comments"]
     all_users = data_manager.get_all_users()
-    return render_template('users.html', table_headers=table_headers, users=all_users)
+    return render_template('users.html', users=all_users)
 
 
 
