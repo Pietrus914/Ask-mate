@@ -58,6 +58,16 @@ header {
     right: 0;
 }
 
+#logged_user {
+    background-color: rgba(200, 195, 195, 0.8);
+    padding: 10px;
+    margin-top: 5vh;
+    color: #31434f;
+    position: fixed;
+    top: 0;
+    left: 80%;
+}
+
 h2 {
     margin: 10px 0;
 }
@@ -460,6 +470,10 @@ img {
 
 .user_id {
     flex: 0.5;
+}
+
+.user_reputation {
+    justify-items: flex-start;
 }
 
 .transparent_rep {
