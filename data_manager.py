@@ -264,8 +264,8 @@ def get_comment_by_id(cursor: RealDictCursor, comment_id: int):
 #         """
 def add_question_comment(cursor: RealDictCursor, details: dict):
     query = f"""
-        INSERT INTO comment (question_id, message, submission_time)
-        VALUES (%(question_id)s, %(comment_message)s, %(submission_time)s )
+        INSERT INTO comment (question_id, message, submission_time, user_id )
+        VALUES (%(question_id)s, %(comment_message)s, %(submission_time)s , %(user_id)s)
         """
     cursor.execute(query, details)
     return
@@ -511,7 +511,7 @@ def get_tag_from_question(cursor: RealDictCursor):
     return cursor.fetchall()
 
 @database_common.connection_handler
-def check_for_user(cursor: RealDictCursor, email: str):
+def check_for_user(cursor: RealDictCursor, email: str):   # ten email powinien być dict
     query = """
         SELECT *
         FROM forum_user
@@ -519,3 +519,23 @@ def check_for_user(cursor: RealDictCursor, email: str):
         """
     cursor.execute(query, email)
     return cursor.rowcount > 0
+
+
+@database_common.connection_handler
+def get_user_id_by_mail(cursor: RealDictCursor, mail: str):
+    query = f"""
+        SELECT id 
+        FROM forum_user
+        WHERE mail = %(mail)s"""
+
+    cursor.execute(query, {'mail': mail})
+    return cursor.fetchone()["id"]
+
+
+@database_common.connection_handler
+def get_all_users(cursor: RealDictCursor):
+    query = f"""
+        SELECT * 
+        FROM forum_user"""
+    cursor.execute(query)
+    return cursor.fetchall()

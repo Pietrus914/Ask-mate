@@ -258,8 +258,11 @@ def new_question_comment(question_id):
     if request.method == "POST":
         details = dict(request.form)
         details["submission_time"] = util.get_current_date_time()
-
+        # if 'email' in session:
+        #     details["user_id"] = data_manager.get_user_id_by_mail(session["mail"])
+        details["user_id"] = data_manager.get_user_id_by_mail("witam@gmail.com")
         data_manager.add_question_comment(details)
+
         return redirect(url_for("display_question", question_id=question_id))
     if request.method == "GET":
         question = data_manager.get_question_by_id(question_id)
@@ -382,6 +385,23 @@ def registration_user_post():
     if data_manager.check_for_user(email):
         return redirect(url_for("registration_user", ver="exist"))
     return redirect(url_for("main_page"))
+
+
+@app.route('/users', methods=["GET"])
+def users():
+    # if 'user_id' in session:
+    #     table_headers = ["ID", "User name", "Reputation", "Registration date",
+    #                      "Added question", "Added answers", "Added comments"]
+    #     all_users = data_manager.get_all_users()
+    #     return render_template('users.html', table_headers=table_headers, users=all_users)
+    # else:
+    #     redirect(url_for('login'))
+    table_headers = ["ID", "User name", "Reputation", "Registration date",
+                     "Added question", "Added answers", "Added comments"]
+    all_users = data_manager.get_all_users()
+    return render_template('users.html', table_headers=table_headers, users=all_users)
+
+
 
 
 if __name__ == "__main__":

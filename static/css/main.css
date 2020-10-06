@@ -412,6 +412,30 @@ img {
 }
 
 
+.table_headers, .table_row {
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    padding: 1em 0;
+    /*background-color: purple;*/
+
+
+}
+
+/*.table_row {*/
+/*    display: flex;*/
+/*    text-align: center;*/
+/*    justify-content: space-between;*/
+/*    padding: 1em 0;*/
+/*}*/
+
+.table_cell {
+    flex-grow: 1;
+    width: 100%;
+    text-align: center;
+    justify-items: center;
+    padding: 1em;
+}
 /* w <a> data-tooltip="Edit"
 /*[data-tooltip]:before {*/
 /*    !*position : absolute;*!*/
