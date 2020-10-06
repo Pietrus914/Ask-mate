@@ -542,10 +542,4 @@ def get_all_users(cursor: RealDictCursor):
     return cursor.fetchall()
 
 
-@database_common.connection_handler
-def add_new_user(cursor: RealDictCursor, new_user: dict):
-    query = """
-        INSERT INTO forum_user (mail, submission_time, hash_pass)
-        VALUES (%(email)s, %(submission_time)s, crypt(%(password)s, gen_salt('bf', 8)))
-        """
-    cursor.execute(query, new_user)
+
