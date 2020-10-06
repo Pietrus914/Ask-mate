@@ -303,6 +303,16 @@ h3.title_box {
     float: none;
 }
 
+.info_row .table_cell {
+    padding: 0;
+    flex: auto;
+}
+
+.flex_row {
+    display: flex;
+}
+
+
 .message_box {
     background-color: rgba(233, 219, 219, 0.6);
     border-radius: 5px;
