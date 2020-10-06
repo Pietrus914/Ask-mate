@@ -512,7 +512,7 @@ def get_tag_from_question(cursor: RealDictCursor):
 
 
 @database_common.connection_handler
-def check_for_user(cursor: RealDictCursor, email: dict):
+def check_for_user(cursor: RealDictCursor, email: str):   # ten email powinien być dict
     query = """
         SELECT *
         FROM forum_user
@@ -523,7 +523,7 @@ def check_for_user(cursor: RealDictCursor, email: dict):
 
 
 @database_common.connection_handler
-def get_user_id_by_mail(cursor: RealDictCursor, email: str):   # ten email powinien być dict
+def get_user_id_by_mail(cursor: RealDictCursor, mail: str):
     query = f"""
         SELECT id 
         FROM forum_user
