@@ -461,6 +461,24 @@ img {
 .user_id {
     flex: 0.5;
 }
+
+.transparent_rep {
+    color: #7f8888;
+}
+
+.green_rep {
+    color: #34603b;
+}
+
+.yellow_rep {
+    color: #dbaa2d;
+
+}
+
+.blue_rep {
+    color: #353598;
+}
+
 /* w <a> data-tooltip="Edit"
 /*[data-tooltip]:before {*/
 /*    !*position : absolute;*!*/
