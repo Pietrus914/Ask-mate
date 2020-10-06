@@ -523,7 +523,7 @@ def check_for_user(cursor: RealDictCursor, email: dict):
 
 
 @database_common.connection_handler
-def get_user_id_by_mail(cursor: RealDictCursor, mail: str):
+def get_user_id_by_mail(cursor: RealDictCursor, email: str):   # ten email powinien być dict
     query = f"""
         SELECT id 
         FROM forum_user
