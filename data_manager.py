@@ -102,7 +102,7 @@ def update_question(cursor: RealDictCursor, edited_question: dict):
 
 
 @database_common.connection_handler
-def update_question_votes(cursor:RealDictCursor, question_id, difference: int):
+def update_question_votes(cursor: RealDictCursor, question_id, difference: int):
     query = f"""
         UPDATE question
         SET vote_number = vote_number + {difference}
@@ -113,7 +113,7 @@ def update_question_votes(cursor:RealDictCursor, question_id, difference: int):
 
 @database_common.connection_handler
 def views_updated(cursor: RealDictCursor, question_id: int):
-    query= f"""
+    query = f"""
         UPDATE question
         SET view_number = view_number + 1
         WHERE id = {question_id}"""
@@ -129,6 +129,7 @@ def delete_answers_for_question(cursor: RealDictCursor, question_id: int):
         WHERE question_id = {question_id}"""
     cursor.execute(query)
     return
+
 
 @database_common.connection_handler
 def delete_comment_for_question(cursor: RealDictCursor, question_id: int):
@@ -159,6 +160,7 @@ def delete_question_from_question_tag(cursor: RealDictCursor, question_id: int):
     cursor.execute(query)
     return
 
+
 @database_common.connection_handler
 def has_question_comment(cursor: RealDictCursor, question_id: int):
     query = f"""
@@ -167,7 +169,6 @@ def has_question_comment(cursor: RealDictCursor, question_id: int):
         WHERE question_id = {question_id}"""
     cursor.execute(query)
     return cursor.fetchone()
-
 
 
 @database_common.connection_handler
@@ -186,6 +187,7 @@ def delete_comment_for_answer(cursor: RealDictCursor, answer_id: int):
         DELETE from comment
         WHERE answer_id = {answer_id}"""
     cursor.execute(query)
+
 
 @database_common.connection_handler
 def delete_answer_from_answers(cursor: RealDictCursor, answer_id: int):
@@ -225,7 +227,6 @@ def get_answer_id_pictures_paths(cursor: RealDictCursor, answer_id):
             WHERE id = {answer_id}"""
     cursor.execute(query)
     return cursor.fetchall()
-
 
 
 @database_common.connection_handler
@@ -333,12 +334,11 @@ def get_answer_by_comment_id(cursor: RealDictCursor, comment_id: int):
 
 
 def get_question_id_by_comment_id(comment_id):
-    if get_question_by_comment_id(comment_id) != None :
+    if get_question_by_comment_id(comment_id) != None:
         return get_question_by_comment_id(comment_id).get("id")
     else:
         answer = get_answer_by_comment_id(comment_id)
         return get_question_id_by_answer_id(answer["id"])
-
 
 
 @database_common.connection_handler
@@ -346,7 +346,7 @@ def add_answer_comment(cursor: RealDictCursor, details: dict):
     query = f"""
         INSERT INTO comment (answer_id, message, submission_time)
         VALUES (%(answer_id)s, %(comment_message)s, %(submission_time)s) """
-    cursor.execute(query,details)
+    cursor.execute(query, details)
     return
 
 
@@ -383,7 +383,6 @@ def get_answer_comments_by_question_id(cursor: RealDictCursor, question_id: int)
 #             WHERE question_id = {question_id}"""
 #     cursor.execute(query)
 #     return
-
 
 
 #
@@ -448,6 +447,7 @@ def add_question_tag_id(cursor: RealDictCursor, tag_id: int, question_id: int):
     cursor.execute(query)
     return
 
+
 @database_common.connection_handler
 def get_tag_by_question_id(cursor: RealDictCursor, question_id: int):
     query = f"""
@@ -457,7 +457,7 @@ def get_tag_by_question_id(cursor: RealDictCursor, question_id: int):
             SELECT tag_id
             FROM question_tag
             WHERE question_id = {question_id})
-            
+
             """
     cursor.execute(query)
     return cursor.fetchall()
@@ -471,6 +471,7 @@ def get_question_id_by_tag_id(cursor: RealDictCursor, tag_id: int):
         WHERE tag_id = {tag_id}"""
     cursor.execute(query)
     return cursor.fetchone()["question_id"]
+
 
 @database_common.connection_handler
 def get_tag_id_by_name(cursor: RealDictCursor, tag_name: str):
@@ -491,6 +492,7 @@ def delete_tag(cursor: RealDictCursor, tag_id: int):
     cursor.execute(query)
     return
 
+
 @database_common.connection_handler
 def get_tag_to_list(cursor: RealDictCursor):
     query = f"""
@@ -499,6 +501,7 @@ def get_tag_to_list(cursor: RealDictCursor):
         """
     cursor.execute(query)
     return cursor.fetchall()
+
 
 @database_common.connection_handler
 def get_tag_from_question(cursor: RealDictCursor):
@@ -510,8 +513,9 @@ def get_tag_from_question(cursor: RealDictCursor):
     cursor.execute(query)
     return cursor.fetchall()
 
+
 @database_common.connection_handler
-def check_for_user(cursor: RealDictCursor, email: str):   # ten email powinien być dict
+def check_for_user(cursor: RealDictCursor, email: str):  # ten email powinien być dict
     query = """
         SELECT *
         FROM forum_user
@@ -541,4 +545,10 @@ def get_all_users(cursor: RealDictCursor):
     return cursor.fetchall()
 
 
-
+@database_common.connection_handler
+def get_all_users_basic_info(cursor: RealDictCursor):
+    query = f"""
+        SELECT id, mail, reputation
+        FROM forum_user"""
+    cursor.execute(query)
+    return cursor.fetchall()
