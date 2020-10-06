@@ -9,25 +9,6 @@
         <h2>List of Users</h2>
     </div>
         <div class="main background_color">
-{#            <div class="table_users">#}
-{#                <div>#}
-{#                {% for header in table_headers %}#}
-{#                <div class="table_headers">{{ header }}</div>#}
-{#                {% endfor %}#}
-{#                </div>#}
-{#            {% for user in users %}#}
-{#            <div class="table_row">#}
-{#                <div class="table_cell user_id">{{ user.id }}</div>#}
-{#                <div class="table_cell user_mail">{{ user.mail }}</div>#}
-{#                <div class="table_cell user_reputation">{{ user.reputation }}</div>#}
-{#                <div class="table_cell user_submission">{{ user.submission_time }}</div>#}
-{#                <div class="table_cell ">{{ user.number_of_question }}</div>#}
-{#                <div class="table_cell ">{{ user.number_of_answer }}</div>#}
-{#                <div class="table_cell">{{ user.number_of_comment }}</div>#}
-{#            {% endfor %}#}
-{#            </div>#}
-
-{#            <div class="table_users">#}
                 <div class="row_tab_head">
 {#                {% for header in table_headers %}#}
                     <div class="table_headers user_id">Id</div>
@@ -44,19 +25,20 @@
             <div class="table_row">
                 <div class="table_cell user_id">{{ user.id }}</div>
                 <div class="table_cell user_mail">{{ user.mail }}</div>
-                {% if user.reputation <=0 %}
-                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap transparent_rep"></i>
-                        {{ user.reputation }}</div>
-                {% elif user.reputation >0 and user.reputation <15 %}
-                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap green_rep"></i>
-                        {{ user.reputation }}</div>
-                {% elif user.reputation >= 15 and user.reputation <99 %}
-                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap yellow_rep"></i>
-                        {{ user.reputation }}</div>
-                {% else %}
-                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap blue_rep"></i>
-                        {{ user.reputation }}</div>
-                {% endif %}
+                {% include 'reputation.html' %}
+{#                {% if user.reputation <=0 %}#}
+{#                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap transparent_rep"></i>#}
+{#                        {{ user.reputation }}</div>#}
+{#                {% elif user.reputation >0 and user.reputation <15 %}#}
+{#                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap green_rep"></i>#}
+{#                        {{ user.reputation }}</div>#}
+{#                {% elif user.reputation >= 15 and user.reputation <99 %}#}
+{#                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap yellow_rep"></i>#}
+{#                        {{ user.reputation }}</div>#}
+{#                {% else %}#}
+{#                    <div class="table_cell user_reputation"><i class="fas fa-graduation-cap blue_rep"></i>#}
+{#                        {{ user.reputation }}</div>#}
+{#                {% endif %}#}
                 <div class="table_cell user_submission">{{ user.submission_time }}</div>
                 <div class="table_cell ">{{ user.number_of_question }}</div>
                 <div class="table_cell ">{{ user.number_of_answer }}</div>
