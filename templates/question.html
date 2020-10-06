@@ -19,13 +19,15 @@
             <div class="message_box">
                 <div class="info_row">
                     <div>{{ question.submission_time }}</div>
-                    {% if question.user_id != None and users %}
-                        {% for user in users  %}
-                            {% if user.id == question.user_id %}
-                                <div class="flex_row">{{ user.mail }} {% include "reputation.html" %}</div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
+                    <div class="flex_row">{{ question.mail }}
+                        {% with user=question %}{% include "reputation.html" %} {% endwith %}</div>
+{#                    {% if question.user_id != None and users %}#}
+{#                        {% for user in users  %}#}
+{#                            {% if user.id == question.user_id %}#}
+{#                                <div class="flex_row">{{ user.mail }} {% include "reputation.html" %}</div>#}
+{#                            {% endif %}#}
+{#                        {% endfor %}#}
+{#                    {% endif %}#}
                     <div>Views: {{ question.view_number }}</div>
                     <div>Voted: {{ question.vote_number }}</div>
                     <div>
@@ -82,7 +84,7 @@
                 {% if question_comments|length > 0 %}
                     <div class="comment">
                         <h3 class="title_box">Comments:</h3>
-
+    <!--{{ question_comments }}-->
                         {% for comment in question_comments %}
                             {% if comment.question_id == question.id %}
 
@@ -90,15 +92,17 @@
 
                                 <div class="info_row">
                                     <div>{{ comment.submission_time }}</div>
+                                    <div class="flex_row">{{ comment.mail }}
+                                        {% with user=comment %}{% include "reputation.html" %}{% endwith %}</div>
 
-                                    {% if comment.user_id != None and users %}
-                                        {% for user in users %}
-
-                                            {% if user.id == comment.user_id %}
-                                                <div class="flex_row">{{ user.mail }} {% include "reputation.html" %}</div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
+{#                                    {% if comment.user_id != None and users %}#}
+{#                                        {% for user in users %}#}
+{##}
+{#                                            {% if user.id == comment.user_id %}#}
+{#                                                <div class="flex_row">{{ user.mail }} {% include "reputation.html" %}</div>#}
+{#                                            {% endif %}#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
 
                                     {% if comment.edited_count %}
                                         <div>Edited {{ comment.edited_count }} time(s)</div>
@@ -142,13 +146,15 @@
 
                         <div class="info_row">
                             <div>{{ answer.submission_time }}</div>
-                                {% if answer.user_id != None and users %}
-                                    {% for user in users %}
-                                        {% if user.id == answer.user_id %}
-                                            <div class="flex_row">{{ user.mail }} {% include "reputation.html" %}</div>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
+                            <div class="flex_row">{{ answer.mail }}
+                                {% with user=answer %}{% include "reputation.html" %}{% endwith %}</div>
+{#                                {% if answer.user_id != None and users %}#}
+{#                                    {% for user in users %}#}
+{#                                        {% if user.id == answer.user_id %}#}
+{#                                            <div class="flex_row">{{ user.mail }} {% include "reputation.html" %}</div>#}
+{#                                        {% endif %}#}
+{#                                    {% endfor %}#}
+{#                                {% endif %}#}
                             <div>Vote's number: {{ answer.vote_number }}</div>
                             <div>
                                 <form action="{{ url_for("answer_vote", answer_id=answer.id, question_id=question["id"]) }}" method="post">
