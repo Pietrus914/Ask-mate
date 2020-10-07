@@ -78,7 +78,7 @@ def display_question(question_id):
     answers_headers = ["Votes' number", "Answer", "Submission time"]
     comment_headers = ["Submission time", "Message", "Edition counter"]
     question_tag = data_manager.get_tag_by_question_id(question_id)
-    users = data_manager.get_all_users_basic_info()
+    # users = data_manager.get_all_users_basic_info()
 
     return render_template("question.html", question=question,
                            answers=answers,
@@ -87,7 +87,7 @@ def display_question(question_id):
                            comment_headers=comment_headers,
                            answer_comments=answer_comments,
                            question_tag=question_tag,
-                           users=users
+                           # users=users
                            )
 
 
@@ -262,6 +262,7 @@ def new_question_comment(question_id):
         details["submission_time"] = util.get_current_date_time()
         # if 'email' in session:
         #     details["user_id"] = data_manager.get_user_id_by_mail(session["mail"])
+        # teraz chwilowo dodany mail w formie stringa
         details["user_id"] = data_manager.get_user_id_by_mail("witam@gmail.com")
         data_manager.add_question_comment(details)
 
@@ -407,6 +408,18 @@ def display_users():
     all_users = data_manager.get_all_users()
     return render_template('users.html', users=all_users)
 
+
+@app.route('/user/<user_id>')
+def display_user(user_id):
+    # if 'user_id' in session:
+    #     user = data_manager.get_user_details(user_id)
+    #     return render_template('user.html')
+    # else:
+    #     redirect(url_for('login'))
+
+    user = data_manager.get_user_details(user_id)
+    activities = data_manager.get_dict_user_activities(user_id)
+    return render_template('user.html', user=user, activities=activities)
 
 
 
