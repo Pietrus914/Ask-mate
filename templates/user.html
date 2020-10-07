@@ -32,38 +32,47 @@
 
     <div class="question">
         <h3>Questions</h3>
-        <div  >
+        <div >
 
-            {% for question in activities.questions  %}
-                <div class="message_box">
+            {% with activity=activities.questions %}
+            {% include "activity_details.html" %}
+            {% endwith %}
 
-                    <div class="info_row">
-                        <div>{{ question.submission_time }}</div>
-                        <div>Views: {{ question.view_number }}</div>
-                        <div>Votes: {{ question.vote_number }}</div>
-                        <div>Picture:
-                            {% if question.image %}
-                                Yes
-                            {% else %}
-                                No
-                            {% endif %}
-                            </div>
-                    </div>
-
-                    <div>
-                        <a href="{{ url_for('display_question', question_id = question.id) }}">
-                            <h5>{{ question.title }}</h5>
-                            <div class="hidden_overflow">{{ question.message }}</div>
-                        </a>
-                    </div>
-
-                </div>
-            {% endfor %}
-
-
+{#            {% for question in activities.questions  %}#}
+{#                <div class="message_box">#}
+{##}
+{#                    <div class="info_row">#}
+{#                        <div>{{ question.submission_time }}</div>#}
+{#                        <div>Views: {{ question.view_number }}</div>#}
+{#                        <div>Votes: {{ question.vote_number }}</div>#}
+{#                        <div>Picture:#}
+{#                            {% if question.image %}#}
+{#                                Yes#}
+{#                            {% else %}#}
+{#                                No#}
+{#                            {% endif %}#}
+{#                            </div>#}
+{#                    </div>#}
+{##}
+{#                    <div>#}
+{#                        <a href="{{ url_for('display_question', question_id = question.id) }}">#}
+{#                            <h5>{{ question.title }}</h5>#}
+{#                            <div class="hidden_overflow">{{ question.message }}</div>#}
+{#                        </a>#}
+{#                    </div>#}
+{##}
+{#                </div>#}
+{#            {% endfor %}#}
 
         </div>
+
     <h3>Answers</h3>
+        <div>
+            {% with activity=activities.answers %}
+            {% include "activity_details.html" %}
+            {% endwith %}
+        </div>
+
     </div>
 
 
