@@ -60,9 +60,11 @@ def get_answers_by_phrase(cursor: RealDictCursor, phrase: str) -> list:
 @database_common.connection_handler
 def get_question_by_id(cursor: RealDictCursor, question_id: int) -> list:
     query = f"""
-        SELECT *
-        FROM question
-        WHERE id = {question_id}
+        SELECT question.*, forum_user.id as forum_user_id, 
+        forum_user.mail as user_mail, forum_user.reputation as reputation
+        FROM question 
+        INNER JOIN forum_user ON question.user_id = forum_user.id
+        WHERE question.id = {question_id}
         """
     cursor.execute(query)
     return cursor.fetchone()
@@ -71,9 +73,11 @@ def get_question_by_id(cursor: RealDictCursor, question_id: int) -> list:
 @database_common.connection_handler
 def get_answers_by_question_id(cursor: RealDictCursor, question_id: int) -> list:
     query = f"""
-        SELECT *
+        SELECT answer.*, forum_user.id as forum_user_id, 
+        forum_user.mail as user_mail, forum_user.reputation as reputation
         FROM answer
-        WHERE question_id = {question_id}
+        INNER JOIN forum_user ON forum_user.id = answer.user_id
+        WHERE answer.question_id = {question_id}
         ORDER BY submission_time DESC
         """
     cursor.execute(query)
@@ -353,9 +357,12 @@ def add_answer_comment(cursor: RealDictCursor, details: dict):
 @database_common.connection_handler
 def get_comments_by_question_id(cursor: RealDictCursor, question_id: int):
     query = f"""
-            SELECT *
+            SELECT comment.*, 
+            forum_user.id as forum_user_id, forum_user.mail as user_mail, 
+            forum_user.reputation as reputation
             FROM comment
-            WHERE question_id = {question_id}
+            INNER JOIN forum_user ON comment.user_id = forum_user.id
+            WHERE comment.question_id = {question_id}
             ORDER BY submission_time DESC"""
     cursor.execute(query)
     return cursor.fetchall()
@@ -364,9 +371,11 @@ def get_comments_by_question_id(cursor: RealDictCursor, question_id: int):
 @database_common.connection_handler
 def get_answer_comments_by_question_id(cursor: RealDictCursor, question_id: int):
     query = f"""
-            SELECT *
-            FROM comment
-            WHERE answer_id IN (
+            SELECT comment.*, 
+            forum_user.id as forum_user_id, forum_user.mail as user_mail, 
+            forum_user.reputation as reputation
+	        FROM comment INNER JOIN forum_user on forum_user.id = comment.user_id
+	        WHERE comment.answer_id IN (
             SELECT id 
             FROM answer 
             WHERE question_id = {question_id})
