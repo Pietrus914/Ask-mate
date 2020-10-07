@@ -349,12 +349,12 @@ def add_tag(question_id):
     if request.method == "GET":
         possible_tags = []
         all_tags = data_manager.get_tag_to_list()
-        tags_in_question = data_manager.get_tag_from_question()
+        tags_in_question = data_manager.get_tag_from_question(question_id)
 
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-
+        print(possible_tags)
         return render_template("add_tag.html", question_id=question_id, possible_tags=possible_tags)
 
 
