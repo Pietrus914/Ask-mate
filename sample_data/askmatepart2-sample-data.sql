@@ -4,6 +4,7 @@
 
 -- Dumped from database version 9.5.6
 -- Dumped by pg_dump version 9.5.6
+CREATE EXTENSION pgcrypto;
 
 ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS pk_question_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS fk_user_id CASCADE;
@@ -124,8 +125,8 @@ ALTER TABLE ONLY question
     ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES forum_user(id);
 
 
-INSERT INTO forum_user VALUES (0, 'witam@gmail.com', '2017-04-28 16:49:00', 4, 5, 8, 0, 'b''$2b$12$TyNPcPQArD.YyWt293ZLHOem/40C4LWqyQMxLzKDP37/yDaxVoNe.''');
-INSERT INTO forum_user VALUES (1, 'matiw@gmail.com', '2016-04-28 16:49:00', 4, 5, 5, 0, 'b''$2b$12$qTbjxmUQZMgyerdd6ksXWu3m3owvKa7AyIi3m5vvk/fb.ovYoOl0a''');
+INSERT INTO forum_user VALUES (0, 'witam@gmail.com', '2017-04-28 16:49:00', 4, 5, 8, 0, crypt('asd123', gen_salt('bf', 8)));
+INSERT INTO forum_user VALUES (1, 'matiw@gmail.com', '2016-04-28 16:49:00', 4, 5, 5, 0, crypt('asd123', gen_salt('bf', 8)));
 
 
 SELECT pg_catalog.setval('forum_user_id_seq', 2, true);
@@ -232,4 +233,3 @@ INSERT INTO question_tag VALUES (0, 1);
 INSERT INTO question_tag VALUES (1, 3);
 INSERT INTO question_tag VALUES (2, 3);
 
-CREATE EXTENSION pgcrypto;

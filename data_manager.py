@@ -488,7 +488,7 @@ def get_tag_id_by_name(cursor: RealDictCursor, tag_name: str):
     query = f"""
         SELECT id 
         FROM tag
-        WHERE name = '{tag_name}'
+        WHERE "name" = '{tag_name}'
         """
     cursor.execute(query)
     return cursor.fetchone()
@@ -514,11 +514,12 @@ def get_tag_to_list(cursor: RealDictCursor):
 
 
 @database_common.connection_handler
-def get_tag_from_question(cursor: RealDictCursor):
+def get_tag_from_question(cursor: RealDictCursor, question_id):
     query = f"""
         SELECT "name"
         FROM tag
         INNER JOIN question_tag ON tag.id=question_tag.tag_id
+        WHERE question_id = {question_id}
         """
     cursor.execute(query)
     return cursor.fetchall()
