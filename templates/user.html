@@ -1,10 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "index.html" %}
 
-</body>
-</html>
+{% block page_title %}{{ user.mail }}{% endblock %}
+
+{% block content %}
+
+<div>
+    <div>
+        <h2>{{ user.mail }}</h2>
+        {% include 'reputation.html' %}
+        <div>Registration date: {{ user.submission_time }}</div>
+    </div>
+
+    <div>
+        <h3>Statistics</h3>
+        <div>Number of added questions:{{ user.questions_number }}</div>
+        <div>Number of added answers:{{ user.answers_number }}</div>
+        <div>Number of added comments:{{ user.comments_number }}</div>
+    </div>
+
+
+    <div>
+        <div>
+            <h3>Question</h3>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+
+{% endblock %}

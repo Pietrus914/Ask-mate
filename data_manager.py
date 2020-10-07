@@ -63,7 +63,7 @@ def get_question_by_id(cursor: RealDictCursor, question_id: int) -> list:
         SELECT question.*, forum_user.id as forum_user_id, 
         forum_user.mail as user_mail, forum_user.reputation as reputation
         FROM question 
-        INNER JOIN forum_user ON question.user_id = forum_user.id
+        LEFT JOIN forum_user ON question.user_id = forum_user.id
         WHERE question.id = {question_id}
         """
     cursor.execute(query)
@@ -76,7 +76,7 @@ def get_answers_by_question_id(cursor: RealDictCursor, question_id: int) -> list
         SELECT answer.*, forum_user.id as forum_user_id, 
         forum_user.mail as user_mail, forum_user.reputation as reputation
         FROM answer
-        INNER JOIN forum_user ON forum_user.id = answer.user_id
+        LEFT JOIN forum_user ON forum_user.id = answer.user_id
         WHERE answer.question_id = {question_id}
         ORDER BY submission_time DESC
         """
@@ -361,7 +361,7 @@ def get_comments_by_question_id(cursor: RealDictCursor, question_id: int):
             forum_user.id as forum_user_id, forum_user.mail as user_mail, 
             forum_user.reputation as reputation
             FROM comment
-            INNER JOIN forum_user ON comment.user_id = forum_user.id
+            LEFT JOIN forum_user ON comment.user_id = forum_user.id
             WHERE comment.question_id = {question_id}
             ORDER BY submission_time DESC"""
     cursor.execute(query)
@@ -374,7 +374,7 @@ def get_answer_comments_by_question_id(cursor: RealDictCursor, question_id: int)
             SELECT comment.*, 
             forum_user.id as forum_user_id, forum_user.mail as user_mail, 
             forum_user.reputation as reputation
-	        FROM comment INNER JOIN forum_user on forum_user.id = comment.user_id
+	        FROM comment LEFT JOIN forum_user on forum_user.id = comment.user_id
 	        WHERE comment.answer_id IN (
             SELECT id 
             FROM answer 
@@ -554,13 +554,13 @@ def get_all_users(cursor: RealDictCursor):
     return cursor.fetchall()
 
 
-@database_common.connection_handler
-def get_all_users_basic_info(cursor: RealDictCursor):
-    query = f"""
-        SELECT id, mail, reputation
-        FROM forum_user"""
-    cursor.execute(query)
-    return cursor.fetchall()
+# @database_common.connection_handler
+# def get_all_users_basic_info(cursor: RealDictCursor):
+#     query = f"""
+#         SELECT id, mail, reputation
+#         FROM forum_user"""
+#     cursor.execute(query)
+#     return cursor.fetchall()
 
 
 @database_common.connection_handler
@@ -570,3 +570,24 @@ def add_new_user(cursor: RealDictCursor, new_user: dict):
         VALUES (%(email)s, %(submission_time)s, crypt(%(password)s, gen_salt('bf', 8)))
         """
     cursor.execute(query, new_user)
+
+@database_common.connection_handler
+def get_user_details(cursor: RealDictCursor, user_id):
+    query = f"""
+            SELECT 
+            forum_user.id, forum_user.mail, 
+            forum_user.submission_time,forum_user.reputation,
+            COUNT(DISTINCT question.id) AS questions_number,
+            COUNT(DISTINCT answer.id) AS answers_number,
+            COUNT(DISTINCT comment.id) AS comments_number
+            FROM forum_user
+            INNER JOIN question ON forum_user.id = question.user_id
+            INNER JOIN answer ON forum_user.id = answer.user_id
+            INNER JOIN comment ON forum_user.id = comment.user_id
+            WHERE forum_user.id = {user_id}
+            GROUP BY forum_user.id"""
+    cursor.execute(query)
+    return cursor.fetchone()
+
+@database_common.connection_handler
+def get_question_by_user(cursor: RealDictCursor, user_id):

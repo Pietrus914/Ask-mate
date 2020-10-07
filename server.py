@@ -409,6 +409,17 @@ def display_users():
     return render_template('users.html')
 
 
+@app.route('/user/<user_id>')
+def display_user(user_id):
+    # if 'user_id' in session:
+    #     user = data_manager.get_user_details(user_id)
+    #     return render_template('user.html')
+    # else:
+    #     redirect(url_for('login'))
+
+    user = data_manager.get_user_details(user_id)
+    return render_template('user.html',user=user)
+
 
 
 if __name__ == "__main__":
