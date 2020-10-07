@@ -4,6 +4,7 @@
 
 -- Dumped from database version 9.5.6
 -- Dumped by pg_dump version 9.5.6
+CREATE EXTENSION pgcrypto;
 
 ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS pk_question_id CASCADE;
 ALTER TABLE IF EXISTS ONLY public.question DROP CONSTRAINT IF EXISTS fk_user_id CASCADE;
@@ -232,4 +233,3 @@ INSERT INTO question_tag VALUES (0, 1);
 INSERT INTO question_tag VALUES (1, 3);
 INSERT INTO question_tag VALUES (2, 3);
 
-CREATE EXTENSION pgcrypto;
