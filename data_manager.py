@@ -593,7 +593,7 @@ def get_user_details(cursor: RealDictCursor, user_id):
 @database_common.connection_handler
 def get_questions_by_user(cursor: RealDictCursor, user_id):
     query = f"""
-            SELECT * 
+            SELECT * , id as question_id
             FROM question
             WHERE user_id = {user_id}
             ORDER BY submission_time DESC"""

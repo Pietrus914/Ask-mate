@@ -87,6 +87,7 @@ h4 {
 
 h5 {
     /*font-size: 1%;*/
+    margin-top: 0.5em;
     }
 
 h5::first-letter {
@@ -407,6 +408,31 @@ h3.title_box {
 /*    margin-right: 2rem;*/
 /*}*/
 
+.user_details {
+    display: flex ;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.user_details div {
+    flex: 1;
+    margin-right: 10%;
+
+}
+
+
+.key_info {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.key_info .icon {
+    font-size: 1.3em;
+    justify-content: flex-start;
+
+    }
 
 footer {
     position: fixed;

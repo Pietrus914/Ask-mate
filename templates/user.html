@@ -5,28 +5,30 @@
 {% block content %}
 
 <div class="main_div">
-    <div >
-        <div><h2>{{ user.mail }}</h2></div>
-        {% include 'reputation.html' %}
-        <div>Since: {{ user.submission_time }}</div>
-    </div>
+    <div class="user_details">
+        <div class="key_info">
+            <div><h2>{{ user.mail }}</h2></div>
+            <div class="icon">{% include 'reputation.html' %}</div>
+            <div>Since: {{ user.submission_time }}</div>
+        </div>
 
-    <div>
-        <h3>Statistics</h3>
-        <table>
-        <tr>
-            <td>Number of added questions:</td>
-            <td>{{ user.questions_number }}</td>
-        </tr>
-        <tr>
-            <td>Number of added answers:</td>
-            <td>{{ user.answers_number }}</td>
-        </tr>
-        <tr>
-            <td>Number of added comments:</td>
-            <td>{{ user.comments_number }}</td>
-        </tr>
-        </table>
+        <div>
+            <h3>Statistics</h3>
+            <table>
+            <tr>
+                <td>Number of added questions:</td>
+                <td>{{ user.questions_number }}</td>
+            </tr>
+            <tr>
+                <td>Number of added answers:</td>
+                <td>{{ user.answers_number }}</td>
+            </tr>
+            <tr>
+                <td>Number of added comments:</td>
+                <td>{{ user.comments_number }}</td>
+            </tr>
+            </table>
+        </div>
     </div>
 
 
@@ -38,37 +40,18 @@
             {% include "activity_details.html" %}
             {% endwith %}
 
-{#            {% for question in activities.questions  %}#}
-{#                <div class="message_box">#}
-{##}
-{#                    <div class="info_row">#}
-{#                        <div>{{ question.submission_time }}</div>#}
-{#                        <div>Views: {{ question.view_number }}</div>#}
-{#                        <div>Votes: {{ question.vote_number }}</div>#}
-{#                        <div>Picture:#}
-{#                            {% if question.image %}#}
-{#                                Yes#}
-{#                            {% else %}#}
-{#                                No#}
-{#                            {% endif %}#}
-{#                            </div>#}
-{#                    </div>#}
-{##}
-{#                    <div>#}
-{#                        <a href="{{ url_for('display_question', question_id = question.id) }}">#}
-{#                            <h5>{{ question.title }}</h5>#}
-{#                            <div class="hidden_overflow">{{ question.message }}</div>#}
-{#                        </a>#}
-{#                    </div>#}
-{##}
-{#                </div>#}
-{#            {% endfor %}#}
-
         </div>
 
     <h3>Answers</h3>
         <div>
             {% with activity=activities.answers %}
+            {% include "activity_details.html" %}
+            {% endwith %}
+        </div>
+
+    <h3>Comments</h3>
+        <div>
+            {% with activity=activities.comments %}
             {% include "activity_details.html" %}
             {% endwith %}
         </div>
