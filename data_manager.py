@@ -374,8 +374,9 @@ def get_answer_comments_by_question_id(cursor: RealDictCursor, question_id: int)
             SELECT comment.*, 
             forum_user.id as forum_user_id, forum_user.mail as user_mail, 
             forum_user.reputation as reputation
-	        FROM comment LEFT JOIN forum_user on forum_user.id = comment.user_id
-	        WHERE comment.answer_id IN (
+            FROM comment LEFT JOIN forum_user 
+            on forum_user.id = comment.user_id
+            WHERE comment.answer_id IN (
             SELECT id 
             FROM answer 
             WHERE question_id = {question_id})
@@ -590,4 +591,44 @@ def get_user_details(cursor: RealDictCursor, user_id):
     return cursor.fetchone()
 
 @database_common.connection_handler
-def get_question_by_user(cursor: RealDictCursor, user_id):
+def get_questions_by_user(cursor: RealDictCursor, user_id):
+    query = f"""
+            SELECT * 
+            FROM question
+            WHERE user_id = {user_id}
+            ORDER BY submission_time DESC"""
+    cursor.execute(query)
+    return cursor.fetchall()
+
+@database_common.connection_handler
+def get_answers_by_user(cursor: RealDictCursor, user_id):
+    query = f"""
+            SELECT * 
+            FROM answer
+            WHERE user_id = {user_id}
+            ORDER BY submission_time DESC"""
+    cursor.execute(query)
+    return cursor.fetchall()
+
+@database_common.connection_handler
+def get_comments_by_user(cursor: RealDictCursor, user_id):
+    query = f"""
+            SELECT * 
+            FROM comment
+            WHERE user_id = {user_id}
+            ORDER BY submission_time DESC"""
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+'''function that prepare dictionary of all questions, 
+answers and comments for a given user'''
+def get_dict_user_activities(user_id):
+    questions = get_questions_by_user(user_id)
+    answers = get_answers_by_user(user_id)
+    comments = get_comments_by_user(user_id)
+
+    user_activities = { "questions": questions,
+                        "answers": answers,
+                        "comments": comments}
+    return user_activities

@@ -1,29 +1,69 @@
 {% extends "index.html" %}
 
-{% block page_title %}{{ user.mail }}{% endblock %}
+{% block page_title %}{% endblock %}
 
 {% block content %}
 
-<div>
-    <div>
-        <h2>{{ user.mail }}</h2>
+<div class="main_div">
+    <div >
+        <div><h2>{{ user.mail }}</h2></div>
         {% include 'reputation.html' %}
-        <div>Registration date: {{ user.submission_time }}</div>
+        <div>Since: {{ user.submission_time }}</div>
     </div>
 
     <div>
         <h3>Statistics</h3>
-        <div>Number of added questions:{{ user.questions_number }}</div>
-        <div>Number of added answers:{{ user.answers_number }}</div>
-        <div>Number of added comments:{{ user.comments_number }}</div>
+        <table>
+        <tr>
+            <td>Number of added questions:</td>
+            <td>{{ user.questions_number }}</td>
+        </tr>
+        <tr>
+            <td>Number of added answers:</td>
+            <td>{{ user.answers_number }}</td>
+        </tr>
+        <tr>
+            <td>Number of added comments:</td>
+            <td>{{ user.comments_number }}</td>
+        </tr>
+        </table>
     </div>
 
 
-    <div>
-        <div>
-            <h3>Question</h3>
+    <div class="question">
+        <h3>Questions</h3>
+        <div  >
+
+            {% for question in activities.questions  %}
+                <div class="message_box">
+
+                    <div class="info_row">
+                        <div>{{ question.submission_time }}</div>
+                        <div>Views: {{ question.view_number }}</div>
+                        <div>Votes: {{ question.vote_number }}</div>
+                        <div>Picture:
+                            {% if question.image %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                            </div>
+                    </div>
+
+                    <div>
+                        <a href="{{ url_for('display_question', question_id = question.id) }}">
+                            <h5>{{ question.title }}</h5>
+                            <div class="hidden_overflow">{{ question.message }}</div>
+                        </a>
+                    </div>
+
+                </div>
+            {% endfor %}
+
+
 
         </div>
+    <h3>Answers</h3>
     </div>
 
 

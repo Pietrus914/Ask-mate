@@ -405,8 +405,8 @@ def display_users():
     #     redirect(url_for('login'))
     # table_headers = ["ID", "User name", "Reputation", "Registration date",
     #                  "Added question", "Added answers", "Added comments"]
-    # all_users = data_manager.get_all_users()
-    return render_template('users.html')
+    all_users = data_manager.get_all_users()
+    return render_template('users.html', users=all_users)
 
 
 @app.route('/user/<user_id>')
@@ -418,7 +418,8 @@ def display_user(user_id):
     #     redirect(url_for('login'))
 
     user = data_manager.get_user_details(user_id)
-    return render_template('user.html',user=user)
+    activities = data_manager.get_dict_user_activities(user_id)
+    return render_template('user.html', user=user, activities=activities)
 
 
 
