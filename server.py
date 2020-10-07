@@ -10,7 +10,7 @@ app.config['UPLOAD_PATH'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowanego obrazu
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
-
+tag_headers = ["Tag name", "number of question"]
 
 def swap_image(uploaded_file):
     """function to use when user can upload file"""
@@ -373,6 +373,13 @@ def delete_tag(tag_id):
     question_id = data_manager.get_question_id_by_tag_id(tag_id)
     data_manager.delete_tag(tag_id)
     return redirect(url_for("display_question", question_id=question_id))
+
+
+@app.route("/tags")
+def tags_page():
+    tags = data_manager.get_tag_to_list()
+
+    return render_template("tag_list.html", tag_headers=tag_headers, tags=tags, story_keys=story_keys)
 
 
 @app.route('/registration/<ver>')

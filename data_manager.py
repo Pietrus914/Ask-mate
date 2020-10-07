@@ -525,6 +525,17 @@ def get_tag_from_question(cursor: RealDictCursor, question_id):
 
 
 @database_common.connection_handler
+def get_tags_by_order(cursor: RealDictCursor, order: str, direct: str):
+    query = f"""
+            SELECT *
+            FROM tag
+            ORDER BY {order} {direct}
+            """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
 def check_for_user(cursor: RealDictCursor, email: dict):
     query = """
         SELECT *

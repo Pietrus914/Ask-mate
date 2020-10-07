@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+
+{% block page_title %}
+    Tags List
+{% endblock %}
+{% block content %}
+<div>
+   <table border="1">
+        <thead>
+            <tr>
+                {% for i in range(tag_headers|length) %}
+                    <th>
+                        {{ tag_headers[i] }}
+                        <a href="{{ url_for("tags_page", order_by=story_keys[i], order_direction="asc") }}">&#8679</a>
+                        <a href="{{ url_for("tags_page", order_by=story_keys[i], order_direction="desc") }}">&#8681</a>
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% for tag in tags %}
+                <td>
+                {{ tag.name }}
+                </td>
+
+        </tr>
+                <tr>
+                    {% for key in story_keys %}
+                        <td>
+                            {% if key == "Tag name" %}
+                                {{tag[key]}}
+
+                            {% elif key == "number of question" %}
+                                {{ tag[name] }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+
+            {% endfor %}
+        </tbody>
+   </table>
+</div>
+{% endblock %}
