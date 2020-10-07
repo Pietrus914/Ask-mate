@@ -515,7 +515,7 @@ def get_tag_from_question(cursor: RealDictCursor):
 
 
 @database_common.connection_handler
-def check_for_user(cursor: RealDictCursor, email: str):  # ten email powinien być dict
+def check_for_user(cursor: RealDictCursor, email: dict):
     query = """
         SELECT *
         FROM forum_user
@@ -552,3 +552,12 @@ def get_all_users_basic_info(cursor: RealDictCursor):
         FROM forum_user"""
     cursor.execute(query)
     return cursor.fetchall()
+
+
+@database_common.connection_handler
+def add_new_user(cursor: RealDictCursor, new_user: dict):
+    query = """
+        INSERT INTO forum_user (mail, submission_time, hash_pass)
+        VALUES (%(email)s, %(submission_time)s, crypt(%(password)s, gen_salt('bf', 8)))
+        """
+    cursor.execute(query, new_user)

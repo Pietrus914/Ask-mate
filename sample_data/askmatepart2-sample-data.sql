@@ -72,10 +72,10 @@ CREATE TABLE forum_user (
     id serial NOT NULL,
     mail text,
     submission_time timestamp without time zone,
-    number_of_question int,
-    number_of_answer int,
-    number_of_comment int,
-    reputation int,
+    number_of_question int DEFAULT 0,
+    number_of_answer int DEFAULT 0,
+    number_of_comment int DEFAULT 0,
+    reputation int DEFAULT 0,
     hash_pass text
 );
 
@@ -231,3 +231,5 @@ SELECT pg_catalog.setval('tag_id_seq', 3, true);
 INSERT INTO question_tag VALUES (0, 1);
 INSERT INTO question_tag VALUES (1, 3);
 INSERT INTO question_tag VALUES (2, 3);
+
+CREATE EXTENSION pgcrypto;

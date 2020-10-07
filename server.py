@@ -384,8 +384,12 @@ def registration_user(ver=None):
 @app.route('/registration/post', methods=["POST"])
 def registration_user_post():
     email = dict(request.form)
+    email['email'] = email['email'].lower()
     if data_manager.check_for_user(email):
         return redirect(url_for("registration_user", ver="exist"))
+    else:
+        email['submission_time'] = util.get_current_date_time()
+        data_manager.add_new_user(email)
     return redirect(url_for("main_page"))
 
 
