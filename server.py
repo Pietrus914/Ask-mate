@@ -405,27 +405,26 @@ def display_users():
     # if 'user_id' in session:
     #     table_headers = ["ID", "User name", "Reputation", "Registration date",
     #                      "Added question", "Added answers", "Added comments"]
-    #     all_users = data_manager.get_all_users()
-    #     return render_template('users.html', table_headers=table_headers, users=all_users)
-    # else:
-    #     redirect(url_for('login'))
+
     # table_headers = ["ID", "User name", "Reputation", "Registration date",
     #                  "Added question", "Added answers", "Added comments"]
-    all_users = data_manager.get_all_users()
-    return render_template('users.html', users=all_users)
+    if session.get(FORM_USERNAME):
+        all_users = data_manager.get_all_users()
+        return render_template('users.html', users=all_users)
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route('/user/<user_id>')
 def display_user(user_id):
-    # if 'user_id' in session:
-    #     user = data_manager.get_user_details(user_id)
-    #     return render_template('user.html')
-    # else:
-    #     redirect(url_for('login'))
 
-    user = data_manager.get_user_details(user_id)
-    activities = data_manager.get_dict_user_activities(user_id)
-    return render_template('user.html', user=user, activities=activities)
+    if session.get(FORM_USERNAME):
+        user = data_manager.get_user_details(user_id)
+        activities = data_manager.get_dict_user_activities(user_id)
+        return render_template('user.html', user=user, activities=activities)
+    else:
+        return redirect(url_for('login_user'))
+
 
 @app.route('/login/<ver>')
 @app.route('/login')
@@ -441,6 +440,8 @@ def login_user_post():
     check_email = data_manager.validate_login(email, pwd)
     if check_email:
         session[SESSION_USERNAME] = email
+        user_id = data_manager.get_user_id_by_mail(email)
+        session['user_id'] = user_id
         return redirect(url_for('main_page'))
     else:
         return redirect(url_for('login_user', ver="bad"))
