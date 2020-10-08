@@ -6,6 +6,7 @@ import datetime
 import database_common
 
 
+
 @database_common.connection_handler
 def get_questions(cursor: RealDictCursor, limit: (None, int)) -> list:  # all questions: limit is None
     if limit is None:
@@ -621,6 +622,15 @@ def get_comments_by_user(cursor: RealDictCursor, user_id):
     cursor.execute(query)
     return cursor.fetchall()
 
+@database_common.connection_handler
+def validate_login(cursor: RealDictCursor, email: str, pwd: str):  # ten email powinien być dict
+    query = """
+        SELECT * 
+        FROM forum_user 
+        WHERE mail=%(mail)s AND hash_pass = crypt(%(password)s, hash_pass);"""
+    cursor.execute(query, {'mail': email, 'password': pwd})
+    return cursor.rowcount > 0
+
 
 '''function that prepare dictionary of all questions, 
 answers and comments for a given user'''
@@ -633,3 +643,28 @@ def get_dict_user_activities(user_id):
                         "answers": answers,
                         "comments": comments}
     return user_activities
+
+
+@database_common.connection_handler
+def gain_reputation_by_question(cursor: RealDictCursor, option: str, forum_user_id: int, post_result: dict):
+    if post_result == "vote_up" and option == "question":
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation + 5
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
+    elif post_result == "vote_up" and option == "answer":
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation + 10
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
+    else:
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation - 2
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)

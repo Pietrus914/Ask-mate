@@ -11,6 +11,9 @@ app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowan
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
 
+FORM_USERNAME = 'username'
+FORM_PASSWORD = 'password'
+SESSION_USERNAME = 'username'
 
 def swap_image(uploaded_file):
     """function to use when user can upload file"""
@@ -22,7 +25,10 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
+    response = make_response(render_template("index.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
+    return response
+
 
 
 @app.route("/list")
@@ -236,22 +242,22 @@ def delete_answer(question_id, answer_id):
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/question/<question_id>/vote_up", methods=["POST"])
-def question_vote(question_id):
+@app.route("/question/<question_id>/<forum_user>/vote_up", methods=["POST"])
+def question_vote(question_id, forum_user):
     post_result = dict(request.form)["vote_question"]
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_question_votes(question_id, difference)
-
+    data_manager.gain_reputation_by_question("question", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/answer/<question_id>/<answer_id>/vote_up", methods=["POST"])
-def answer_vote(question_id, answer_id):
+@app.route("/answer/<question_id>/<answer_id>/<forum_user>/vote_up", methods=["POST"])
+def answer_vote(question_id, answer_id, forum_user):
     post_result = dict(request.form)["vote_answer"]
     # print(post_result)
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_answer_votes(answer_id, difference)
-
+    data_manager.gain_reputation_by_question("answer", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
@@ -421,7 +427,28 @@ def display_user(user_id):
     activities = data_manager.get_dict_user_activities(user_id)
     return render_template('user.html', user=user, activities=activities)
 
+@app.route('/login/<ver>')
+@app.route('/login')
+def login_user(ver=None):
+    response = make_response(render_template('login.html', ver = ver, username = FORM_USERNAME, password = FORM_PASSWORD))
+    return response
 
+@app.route('/login/post', methods=['POST'])
+def login_user_post():
+    email = request.form[FORM_USERNAME]
+    pwd = request.form[FORM_PASSWORD]
+
+    check_email = data_manager.validate_login(email, pwd)
+    if check_email:
+        session[SESSION_USERNAME] = email
+        return redirect(url_for('main_page'))
+    else:
+        return redirect(url_for('login_user', ver="bad"))
+
+@app.route('/logout/')
+def logout():
+    session.pop(SESSION_USERNAME)
+    return redirect(url_for('main_page'))
 
 if __name__ == "__main__":
     app.run()
