@@ -19,12 +19,14 @@
             <div class="message_box">
                 <div class="info_row">
                     <div>{{ question.submission_time }}</div>
-                    <div class="flex_row">{{ question.user_mail }}
+                    {% if question.forum_user_id != None %}
+                        <div class="flex_row">{{ question.user_mail }}
                         {% with user=question %}{% include "reputation.html" %} {% endwith %}</div>
+                    {% endif %}
                     <div>Views: {{ question.view_number }}</div>
                     <div>Voted: {{ question.vote_number }}</div>
                     <div>
-                        <form action="{{ url_for("question_vote", question_id=question.id) }}" method="post">
+                        <form action="{{ url_for("question_vote", question_id=question.id, forum_user = question.forum_user_id) }}" method="post">
                             <button type="submit" id="vote_up" name = "vote_question" value="vote_up"> VOTE UP |</button>
                             <button type="submit" id="vote_down" name = "vote_question" value="vote_down"> VOTE DOWN </button>
                         </form>
@@ -85,9 +87,11 @@
 
                                 <div class="info_row">
                                     <div>{{ comment.submission_time }}</div>
-                                    <div class="flex_row">{{ comment.user_mail }}
+                                    {% if comment.forum_user_id != None %}
+                                        <div class="flex_row">{{ comment.user_mail }}
                                         {% with user=comment %}{% include "reputation.html" %}{% endwith %}</div>
-                                    {% if comment.edited_count %}
+                                    {% endif %}
+                                        {% if comment.edited_count %}
                                         <div>Edited {{ comment.edited_count }} time(s)</div>
                                     {% endif %}
                                     <div>
@@ -129,11 +133,13 @@
 
                         <div class="info_row">
                             <div>{{ answer.submission_time }}</div>
-                            <div class="flex_row">{{ answer.user_mail }}
+                            {% if answer.forum_user_id != None %}
+                                <div class="flex_row">{{ answer.user_mail }}
                                 {% with user=answer %}{% include "reputation.html" %}{% endwith %}</div>
+                            {% endif %}
                             <div>Vote's number: {{ answer.vote_number }}</div>
                             <div>
-                                <form action="{{ url_for("answer_vote", answer_id=answer.id, question_id=question["id"]) }}" method="post">
+                                <form action="{{ url_for("answer_vote", answer_id=answer.id, question_id=question["id"], forum_user=answer.forum_user_id) }}" method="post">
                                     <button type="submit" id="vote_up" name = "vote_answer" value="vote_up"> VOTE UP |</button>
                                     <button type="submit"  id="vote_down" name = "vote_answer" value="vote_down"> VOTE DOWN</button>
                                 </form>
@@ -177,8 +183,10 @@
 
                                     <div class="info_row">
                                         <div>{{ comment.submission_time }}</div>
-                                        <div class="flex_row">{{ comment.user_mail }}
+                                        {% if comment.forum_user_id != None %}
+                                            <div class="flex_row">{{ comment.user_mail }}
                                             {% with user=comment %}{% include "reputation.html" %}{% endwith %}</div>
+                                        {% endif %}
                                         {% if comment.edited_count %}
                                             <div>Edited {{ comment.edited_count }} time(s)</div>
 {#                                        <<<{% else %}#}

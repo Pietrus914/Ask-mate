@@ -126,7 +126,8 @@ ALTER TABLE ONLY question
 
 
 INSERT INTO forum_user VALUES (0, 'witam@gmail.com', '2017-04-28 16:49:00', 4, 5, 8, 0, crypt('asd123', gen_salt('bf', 8)));
-INSERT INTO forum_user VALUES (1, 'matiw@gmail.com', '2016-04-28 16:49:00', 4, 5, 5, 0, crypt('asd123', gen_salt('bf', 8)));
+INSERT INTO forum_user VALUES (1, 'matiw@gmail.com', '2016-04-28 16:49:00', 4, 5, 5, 12, crypt('asd123', gen_salt('bf', 8)));
+INSERT INTO forum_user VALUES (2, 'korek@gmail.com', '2020-04-28 16:49:00', 0, 0, 0, 0, crypt('asd123', gen_salt('bf', 8)));
 
 
 SELECT pg_catalog.setval('forum_user_id_seq', 2, true);

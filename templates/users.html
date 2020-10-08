@@ -24,12 +24,13 @@
             {% for user in users %}
             <div class="table_row">
                 <div class="table_cell user_id">{{ user.id }}</div>
-                <div class="table_cell user_mail">{{ user.mail }}</div>
+                <div class="table_cell user_mail">
+                    <a href="{{ url_for('display_user', user_id= user.id) }}">{{ user.mail }}</a></div>
                 {% include 'reputation.html' %}
                 <div class="table_cell user_submission">{{ user.submission_time }}</div>
-                <div class="table_cell ">{{ user.number_of_question }}</div>
-                <div class="table_cell ">{{ user.number_of_answer }}</div>
-                <div class="table_cell">{{ user.number_of_comment }}</div>
+                <div class="table_cell ">{{ user.questions_number }}</div>
+                <div class="table_cell ">{{ user.answers_number }}</div>
+                <div class="table_cell">{{ user.comments_number }}</div>
 
             </div>
         {% endfor %}

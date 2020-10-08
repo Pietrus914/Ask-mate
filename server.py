@@ -11,6 +11,9 @@ app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowan
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
 
+FORM_USERNAME = 'username'
+FORM_PASSWORD = 'password'
+SESSION_USERNAME = 'username'
 
 
 
@@ -25,7 +28,10 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
+    response = make_response(render_template("index.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
+    return response
+
 
 
 @app.route("/list")
@@ -81,7 +87,7 @@ def display_question(question_id):
     answers_headers = ["Votes' number", "Answer", "Submission time"]
     comment_headers = ["Submission time", "Message", "Edition counter"]
     question_tag = data_manager.get_tag_by_question_id(question_id)
-    users = data_manager.get_all_users_basic_info()
+    # users = data_manager.get_all_users_basic_info()
 
     return render_template("question.html", question=question,
                            answers=answers,
@@ -90,7 +96,7 @@ def display_question(question_id):
                            comment_headers=comment_headers,
                            answer_comments=answer_comments,
                            question_tag=question_tag,
-                           users=users
+                           # users=users
                            )
 
 
@@ -239,22 +245,22 @@ def delete_answer(question_id, answer_id):
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/question/<question_id>/vote_up", methods=["POST"])
-def question_vote(question_id):
+@app.route("/question/<question_id>/<forum_user>/vote_up", methods=["POST"])
+def question_vote(question_id, forum_user):
     post_result = dict(request.form)["vote_question"]
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_question_votes(question_id, difference)
-
+    data_manager.gain_reputation_by_question("question", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/answer/<question_id>/<answer_id>/vote_up", methods=["POST"])
-def answer_vote(question_id, answer_id):
+@app.route("/answer/<question_id>/<answer_id>/<forum_user>/vote_up", methods=["POST"])
+def answer_vote(question_id, answer_id, forum_user):
     post_result = dict(request.form)["vote_answer"]
     # print(post_result)
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_answer_votes(answer_id, difference)
-
+    data_manager.gain_reputation_by_question("answer", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
@@ -265,6 +271,7 @@ def new_question_comment(question_id):
         details["submission_time"] = util.get_current_date_time()
         # if 'email' in session:
         #     details["user_id"] = data_manager.get_user_id_by_mail(session["mail"])
+        # teraz chwilowo dodany mail w formie stringa
         details["user_id"] = data_manager.get_user_id_by_mail("witam@gmail.com")
         data_manager.add_question_comment(details)
 
@@ -408,17 +415,51 @@ def display_users():
     # if 'user_id' in session:
     #     table_headers = ["ID", "User name", "Reputation", "Registration date",
     #                      "Added question", "Added answers", "Added comments"]
-    #     all_users = data_manager.get_all_users()
-    #     return render_template('users.html', table_headers=table_headers, users=all_users)
-    # else:
-    #     redirect(url_for('login'))
+
     # table_headers = ["ID", "User name", "Reputation", "Registration date",
     #                  "Added question", "Added answers", "Added comments"]
-    all_users = data_manager.get_all_users()
-    return render_template('users.html', users=all_users)
+    if session.get(FORM_USERNAME):
+        all_users = data_manager.get_all_users()
+        return render_template('users.html', users=all_users)
+    else:
+        return redirect(url_for('login_user'))
 
 
+@app.route('/user/<user_id>')
+def display_user(user_id):
 
+    if session.get(FORM_USERNAME):
+        user = data_manager.get_user_details(user_id)
+        activities = data_manager.get_dict_user_activities(user_id)
+        return render_template('user.html', user=user, activities=activities)
+    else:
+        return redirect(url_for('login_user'))
+
+
+@app.route('/login/<ver>')
+@app.route('/login')
+def login_user(ver=None):
+    response = make_response(render_template('login.html', ver = ver, username = FORM_USERNAME, password = FORM_PASSWORD))
+    return response
+
+@app.route('/login/post', methods=['POST'])
+def login_user_post():
+    email = request.form[FORM_USERNAME]
+    pwd = request.form[FORM_PASSWORD]
+
+    check_email = data_manager.validate_login(email, pwd)
+    if check_email:
+        session[SESSION_USERNAME] = email
+        user_id = data_manager.get_user_id_by_mail(email)
+        session['user_id'] = user_id
+        return redirect(url_for('main_page'))
+    else:
+        return redirect(url_for('login_user', ver="bad"))
+
+@app.route('/logout/')
+def logout():
+    session.pop(SESSION_USERNAME)
+    return redirect(url_for('main_page'))
 
 if __name__ == "__main__":
     app.run()
