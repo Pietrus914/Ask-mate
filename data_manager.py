@@ -507,8 +507,10 @@ def delete_tag(cursor: RealDictCursor, tag_id: int):
 @database_common.connection_handler
 def get_tag_to_list(cursor: RealDictCursor):
     query = f"""
-        SELECT "name"
-        FROM tag
+        select (name), count (name)
+        from tag as t
+        inner join question_tag as q on t.id = q.tag_id
+        group by ("name") 
         """
     cursor.execute(query)
     return cursor.fetchall()
@@ -529,8 +531,10 @@ def get_tag_from_question(cursor: RealDictCursor, question_id):
 @database_common.connection_handler
 def get_tags_by_order(cursor: RealDictCursor, order: str, direct: str):
     query = f"""
-            SELECT *
-            FROM tag
+            select (name), count (name)
+            from tag as t
+            inner join question_tag as q on t.id = q.tag_id
+            group by ("name") 
             ORDER BY {order} {direct}
             """
     cursor.execute(query)
@@ -598,6 +602,7 @@ def add_new_user(cursor: RealDictCursor, new_user: dict):
         """
     cursor.execute(query, new_user)
 
+
 @database_common.connection_handler
 def get_user_details(cursor: RealDictCursor, user_id):
     query = f"""
@@ -616,6 +621,7 @@ def get_user_details(cursor: RealDictCursor, user_id):
     cursor.execute(query)
     return cursor.fetchone()
 
+
 @database_common.connection_handler
 def get_questions_by_user(cursor: RealDictCursor, user_id):
     query = f"""
@@ -625,6 +631,7 @@ def get_questions_by_user(cursor: RealDictCursor, user_id):
             ORDER BY submission_time DESC"""
     cursor.execute(query)
     return cursor.fetchall()
+
 
 @database_common.connection_handler
 def get_answers_by_user(cursor: RealDictCursor, user_id):
@@ -636,6 +643,7 @@ def get_answers_by_user(cursor: RealDictCursor, user_id):
     cursor.execute(query)
     return cursor.fetchall()
 
+
 @database_common.connection_handler
 def get_comments_by_user(cursor: RealDictCursor, user_id):
     query = f"""
@@ -645,6 +653,7 @@ def get_comments_by_user(cursor: RealDictCursor, user_id):
             ORDER BY submission_time DESC"""
     cursor.execute(query)
     return cursor.fetchall()
+
 
 @database_common.connection_handler
 def validate_login(cursor: RealDictCursor, email: str, pwd: str):  # ten email powinien być dict

@@ -10,6 +10,8 @@ app.config['UPLOAD_PATH'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowanego obrazu
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
+tag_headers = ["Tag name", "Number of question"]
+tag_keys = ["name", "count"]
 
 FORM_USERNAME = 'username'
 FORM_PASSWORD = 'password'
@@ -31,7 +33,6 @@ def main_page():
     response = make_response(render_template("index.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
-
 
 
 @app.route("/list")
@@ -346,7 +347,7 @@ def new_answer_comment(answer_id):
 
 @app.route('/question/<question_id>/new-tag', methods=["GET", "POST"])
 def add_tag(question_id):
-    print(request.form)
+
     if request.method == "POST":
 
         tag_name = dict(request.form)
@@ -364,7 +365,7 @@ def add_tag(question_id):
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-        print(possible_tags)
+        
         return render_template("add_tag.html", question_id=question_id, possible_tags=possible_tags)
 
 
@@ -382,6 +383,7 @@ def add_old_tag(question_id):
 def delete_tag(tag_id):
     question_id = data_manager.get_question_id_by_tag_id(tag_id)
     data_manager.delete_tag(tag_id)
+
     return redirect(url_for("display_question", question_id=question_id))
 
 
@@ -389,7 +391,10 @@ def delete_tag(tag_id):
 def tags_page():
     tags = data_manager.get_tag_to_list()
 
-    return render_template("tag_list.html", tag_headers=tag_headers, tags=tags, story_keys=story_keys)
+    if len(request.args) != 0:
+        tags = data_manager.get_tags_by_order(request.args.get("order_by"),
+                                                        request.args.get("order_direction"))
+    return render_template("tag_list.html", tag_headers=tag_headers, tags=tags, tag_keys=tag_keys)
 
 
 @app.route('/registration/<ver>')
@@ -442,6 +447,7 @@ def login_user(ver=None):
     response = make_response(render_template('login.html', ver = ver, username = FORM_USERNAME, password = FORM_PASSWORD))
     return response
 
+
 @app.route('/login/post', methods=['POST'])
 def login_user_post():
     email = request.form[FORM_USERNAME]
@@ -456,16 +462,12 @@ def login_user_post():
     else:
         return redirect(url_for('login_user', ver="bad"))
 
+
 @app.route('/logout/')
 def logout():
     session.pop(SESSION_USERNAME)
     return redirect(url_for('main_page'))
 
+
 if __name__ == "__main__":
     app.run()
-
-
-
-
-
-tag_headers = ["Tag name", "number of question"]
