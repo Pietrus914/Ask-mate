@@ -550,9 +550,22 @@ def get_user_id_by_mail(cursor: RealDictCursor, mail: str):
 
 @database_common.connection_handler
 def get_all_users(cursor: RealDictCursor):
+    # query = f"""
+    #     SELECT *
+    #     FROM forum_user"""
+
     query = f"""
-        SELECT * 
-        FROM forum_user"""
+    select forum_user.id, forum_user.mail, 
+    forum_user.submission_time,forum_user.reputation,
+    COUNT(DISTINCT question.id) AS questions_number,
+    COUNT(DISTINCT answer.id) AS answers_number,
+    COUNT(DISTINCT comment.id) AS comments_number
+    from forum_user
+    LEFT JOIN question ON forum_user.id = question.user_id
+    LEFT JOIN answer ON forum_user.id = answer.user_id
+    LEFt JOIN comment ON forum_user.id = comment.user_id
+    GROUP BY forum_user.id
+    """
     cursor.execute(query)
     return cursor.fetchall()
 
