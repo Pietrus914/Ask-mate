@@ -633,3 +633,28 @@ def get_dict_user_activities(user_id):
                         "answers": answers,
                         "comments": comments}
     return user_activities
+
+
+@database_common.connection_handler
+def gain_reputation_by_question(cursor: RealDictCursor, option: str, forum_user_id: int, post_result: dict):
+    if post_result == "vote_up" and option == "question":
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation + 5
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
+    elif post_result == "vote_up" and option == "answer":
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation + 10
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
+    else:
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation - 2
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
