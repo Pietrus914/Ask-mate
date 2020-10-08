@@ -25,7 +25,10 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
+    response = make_response(render_template("index.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
+    return response
+
 
 
 @app.route("/list")
@@ -408,23 +411,27 @@ def display_users():
 
 
 @app.route('/login/<ver>')
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login')
 def login_user(ver=None):
-    if request.method == 'POST':
-        email = request.form[FORM_USERNAME]
-        pwd = request.form[FORM_PASSWORD]
+    response = make_response(render_template('login.html', ver = ver, username = FORM_USERNAME, password = FORM_PASSWORD))
+    return response
 
-        check_email = data_manager.validate_login(email, pwd)
-        if check_email:
-            return redirect(url_for('main_page'))
-        else:
-            return redirect(url_for('login_user', ver="bad"))
+@app.route('/login/post', methods=['POST'])
+def login_user_post():
+    email = request.form[FORM_USERNAME]
+    pwd = request.form[FORM_PASSWORD]
+
+    check_email = data_manager.validate_login(email, pwd)
+    if check_email:
+        session[SESSION_USERNAME] = email
+        return redirect(url_for('main_page'))
     else:
-        response = make_response(render_template('login.html', ver=ver, username = FORM_USERNAME, password = FORM_PASSWORD))
-        return response
+        return redirect(url_for('login_user', ver="bad"))
 
-
-
+@app.route('/logout/')
+def logout():
+    session.pop(SESSION_USERNAME)
+    return redirect(url_for('main_page'))
 
 if __name__ == "__main__":
     app.run()

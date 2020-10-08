@@ -9,12 +9,12 @@
         <div>Wrong login or password. Try again.</div>
     {% endif %}
 
-    <form name="login" action="{{ url_for('login_user') }}" method="post">
+    <form name="login" action="{{ url_for('login_user_post') }}" method="post">
         <label for="{{ username }}">Email:</label>
         <input class="underline" id="{{ username }}" name="{{ username }}" type="text">
         <label for="{{ password }}">Password:</label>
         <input class="underline" id="{{ password }}" name="{{ password }}" type="password" required>
-        <button type="submit" class="search_arrow">&rarr; Sign Up</button>
+        <button type="submit" class="forward">&rarr; Log in</button>
     </form>
 
 {% endblock %}
