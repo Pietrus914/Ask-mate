@@ -349,8 +349,8 @@ def get_question_id_by_comment_id(comment_id):
 @database_common.connection_handler
 def add_answer_comment(cursor: RealDictCursor, details: dict):
     query = f"""
-        INSERT INTO comment (answer_id, message, submission_time)
-        VALUES (%(answer_id)s, %(comment_message)s, %(submission_time)s) """
+        INSERT INTO comment (answer_id, message, submission_time, user_id)
+        VALUES (%(answer_id)s, %(comment_message)s, %(submission_time)s, %(user_id)s) """
     cursor.execute(query, details)
     return
 

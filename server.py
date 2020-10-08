@@ -337,7 +337,7 @@ def new_answer_comment(answer_id):
         if request.method == "POST":
             details = dict(request.form)
             details["submission_time"] = util.get_current_date_time()
-
+            details["user_id"] = session['user_id']
             data_manager.add_answer_comment(details)
             question_id = data_manager.get_question_id_by_answer_id(answer_id)
             return redirect(url_for("display_question", question_id=question_id))
