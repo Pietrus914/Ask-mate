@@ -11,6 +11,9 @@ app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowan
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
 
+FORM_USERNAME = 'username'
+FORM_PASSWORD = 'password'
+SESSION_USERNAME = 'username'
 
 def swap_image(uploaded_file):
     """function to use when user can upload file"""
@@ -402,6 +405,23 @@ def display_users():
     #                  "Added question", "Added answers", "Added comments"]
     all_users = data_manager.get_all_users()
     return render_template('users.html', users=all_users)
+
+
+@app.route('/login/<ver>')
+@app.route('/login', methods=['POST', 'GET'])
+def login_user(ver=None):
+    if request.method == 'POST':
+        email = request.form[FORM_USERNAME]
+        pwd = request.form[FORM_PASSWORD]
+
+        check_email = data_manager.validate_login(email, pwd)
+        if check_email:
+            return redirect(url_for('main_page'))
+        else:
+            return redirect(url_for('login_user', ver="bad"))
+    else:
+        response = make_response(render_template('login.html', ver=ver, username = FORM_USERNAME, password = FORM_PASSWORD))
+        return response
 
 
 

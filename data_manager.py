@@ -6,6 +6,7 @@ import datetime
 import database_common
 
 
+
 @database_common.connection_handler
 def get_questions(cursor: RealDictCursor, limit: (None, int)) -> list:  # all questions: limit is None
     if limit is None:
@@ -552,3 +553,12 @@ def get_all_users_basic_info(cursor: RealDictCursor):
         FROM forum_user"""
     cursor.execute(query)
     return cursor.fetchall()
+
+@database_common.connection_handler
+def validate_login(cursor: RealDictCursor, email: str, pwd: str):  # ten email powinien być dict
+    query = """
+        SELECT * 
+        FROM forum_user 
+        WHERE mail=%(mail)s AND hash_pass = crypt(%(password)s, hash_pass);"""
+    cursor.execute(query, {'mail': email, 'password': pwd})
+    return cursor.rowcount > 0
