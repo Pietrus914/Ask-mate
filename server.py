@@ -441,6 +441,8 @@ def login_user_post():
     check_email = data_manager.validate_login(email, pwd)
     if check_email:
         session[SESSION_USERNAME] = email
+        user_id = data_manager.get_user_id_by_mail(email)
+        session['user_id'] = user_id
         return redirect(url_for('main_page'))
     else:
         return redirect(url_for('login_user', ver="bad"))
