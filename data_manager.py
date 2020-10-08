@@ -681,3 +681,13 @@ def gain_reputation_by_question(cursor: RealDictCursor, option: str, forum_user_
             WHERE id = {forum_user_id}
             """
         cursor.execute(query)
+
+@database_common.connection_handler
+def get_reputation_by_id(cursor: RealDictCursor, user_id: int):
+    query = f"""
+                SELECT reputation
+                FROM forum_user
+                WHERE id = {user_id}
+                """
+    cursor.execute(query)
+    return cursor.fetchone()
