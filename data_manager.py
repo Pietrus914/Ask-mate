@@ -349,8 +349,8 @@ def get_question_id_by_comment_id(comment_id):
 @database_common.connection_handler
 def add_answer_comment(cursor: RealDictCursor, details: dict):
     query = f"""
-        INSERT INTO comment (answer_id, message, submission_time)
-        VALUES (%(answer_id)s, %(comment_message)s, %(submission_time)s) """
+        INSERT INTO comment (answer_id, message, submission_time, user_id)
+        VALUES (%(answer_id)s, %(comment_message)s, %(submission_time)s, %(user_id)s) """
     cursor.execute(query, details)
     return
 
@@ -628,10 +628,23 @@ def get_answers_by_user(cursor: RealDictCursor, user_id):
 @database_common.connection_handler
 def get_comments_by_user(cursor: RealDictCursor, user_id):
     query = f"""
-            SELECT * 
-            FROM comment
-            WHERE user_id = {user_id}
-            ORDER BY submission_time DESC"""
+        SELECT comment.id, comment.question_id as quest_id, comment.answer_id, 
+                comment.user_id, comment.message, comment.submission_time, comment.edited_count,
+        (CASE WHEN comment.question_id IS NULL THEN answer.question_id
+        ELSE comment.question_id END) AS question_id
+        FROM comment 
+        LEFT JOIN answer on answer.id = comment.answer_id
+        WHERE comment.user_id = {user_id}
+        ORDER BY comment.submission_time DESC
+        """
+
+    #
+    #
+    # query = f"""
+    #         SELECT *
+    #         FROM comment
+    #         WHERE user_id = {user_id}
+    #         ORDER BY submission_time DESC"""
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -681,3 +694,13 @@ def gain_reputation_by_question(cursor: RealDictCursor, option: str, forum_user_
             WHERE id = {forum_user_id}
             """
         cursor.execute(query)
+
+@database_common.connection_handler
+def get_reputation_by_id(cursor: RealDictCursor, user_id: int):
+    query = f"""
+                SELECT reputation
+                FROM forum_user
+                WHERE id = {user_id}
+                """
+    cursor.execute(query)
+    return cursor.fetchone()
