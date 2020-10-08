@@ -84,7 +84,7 @@ def display_question(question_id):
     answers_headers = ["Votes' number", "Answer", "Submission time"]
     comment_headers = ["Submission time", "Message", "Edition counter"]
     question_tag = data_manager.get_tag_by_question_id(question_id)
-    users = data_manager.get_all_users_basic_info()
+    # users = data_manager.get_all_users_basic_info()
 
     return render_template("question.html", question=question,
                            answers=answers,
@@ -93,7 +93,7 @@ def display_question(question_id):
                            comment_headers=comment_headers,
                            answer_comments=answer_comments,
                            question_tag=question_tag,
-                           users=users
+                           # users=users
                            )
 
 
@@ -242,22 +242,22 @@ def delete_answer(question_id, answer_id):
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/question/<question_id>/vote_up", methods=["POST"])
-def question_vote(question_id):
+@app.route("/question/<question_id>/<forum_user>/vote_up", methods=["POST"])
+def question_vote(question_id, forum_user):
     post_result = dict(request.form)["vote_question"]
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_question_votes(question_id, difference)
-
+    data_manager.gain_reputation_by_question("question", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/answer/<question_id>/<answer_id>/vote_up", methods=["POST"])
-def answer_vote(question_id, answer_id):
+@app.route("/answer/<question_id>/<answer_id>/<forum_user>/vote_up", methods=["POST"])
+def answer_vote(question_id, answer_id, forum_user):
     post_result = dict(request.form)["vote_answer"]
     # print(post_result)
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_answer_votes(answer_id, difference)
-
+    data_manager.gain_reputation_by_question("answer", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
@@ -268,6 +268,7 @@ def new_question_comment(question_id):
         details["submission_time"] = util.get_current_date_time()
         # if 'email' in session:
         #     details["user_id"] = data_manager.get_user_id_by_mail(session["mail"])
+        # teraz chwilowo dodany mail w formie stringa
         details["user_id"] = data_manager.get_user_id_by_mail("witam@gmail.com")
         data_manager.add_question_comment(details)
 
@@ -355,12 +356,12 @@ def add_tag(question_id):
     if request.method == "GET":
         possible_tags = []
         all_tags = data_manager.get_tag_to_list()
-        tags_in_question = data_manager.get_tag_from_question()
+        tags_in_question = data_manager.get_tag_from_question(question_id)
 
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-
+        print(possible_tags)
         return render_template("add_tag.html", question_id=question_id, possible_tags=possible_tags)
 
 
@@ -390,8 +391,12 @@ def registration_user(ver=None):
 @app.route('/registration/post', methods=["POST"])
 def registration_user_post():
     email = dict(request.form)
+    email['email'] = email['email'].lower()
     if data_manager.check_for_user(email):
         return redirect(url_for("registration_user", ver="exist"))
+    else:
+        email['submission_time'] = util.get_current_date_time()
+        data_manager.add_new_user(email)
     return redirect(url_for("main_page"))
 
 
@@ -409,6 +414,18 @@ def display_users():
     all_users = data_manager.get_all_users()
     return render_template('users.html', users=all_users)
 
+
+@app.route('/user/<user_id>')
+def display_user(user_id):
+    # if 'user_id' in session:
+    #     user = data_manager.get_user_details(user_id)
+    #     return render_template('user.html')
+    # else:
+    #     redirect(url_for('login'))
+
+    user = data_manager.get_user_details(user_id)
+    activities = data_manager.get_dict_user_activities(user_id)
+    return render_template('user.html', user=user, activities=activities)
 
 @app.route('/login/<ver>')
 @app.route('/login')
