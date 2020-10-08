@@ -34,6 +34,8 @@
 
     <div class="question">
         <h3>Questions</h3>
+
+        {% if user.questions_number > 0 %}
         <div >
 
             {% with activity=activities.questions %}
@@ -41,20 +43,27 @@
             {% endwith %}
 
         </div>
+        {% endif %}
 
     <h3>Answers</h3>
+
+        {% if user.answers_number > 0 %}
         <div>
             {% with activity=activities.answers %}
             {% include "activity_details.html" %}
             {% endwith %}
         </div>
+        {% endif %}
 
     <h3>Comments</h3>
+
+        {% if user.comments_number > 0 %}
         <div>
             {% with activity=activities.comments %}
             {% include "activity_details.html" %}
             {% endwith %}
         </div>
+        {% endif %}
 
     </div>
 

@@ -415,7 +415,7 @@ def display_user(user_id):
     #     user = data_manager.get_user_details(user_id)
     #     return render_template('user.html')
     # else:
-    #     redirect(url_for('login'))
+    #     redirect(url_for('login_user'))
 
     user = data_manager.get_user_details(user_id)
     activities = data_manager.get_dict_user_activities(user_id)
