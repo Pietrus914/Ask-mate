@@ -11,7 +11,6 @@ app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # maksymalna wielkosc uploadowan
 headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
 tag_headers = ["Tag name", "number of question"]
-
 def swap_image(uploaded_file):
     """function to use when user can upload file"""
     if uploaded_file.filename != '':
@@ -419,3 +418,8 @@ def display_users():
 
 if __name__ == "__main__":
     app.run()
+
+
+
+
+
