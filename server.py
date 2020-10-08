@@ -236,22 +236,22 @@ def delete_answer(question_id, answer_id):
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/question/<question_id>/vote_up", methods=["POST"])
-def question_vote(question_id):
+@app.route("/question/<question_id>/<forum_user>/vote_up", methods=["POST"])
+def question_vote(question_id, forum_user):
     post_result = dict(request.form)["vote_question"]
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_question_votes(question_id, difference)
-
+    data_manager.gain_reputation_by_question("question", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 
-@app.route("/answer/<question_id>/<answer_id>/vote_up", methods=["POST"])
-def answer_vote(question_id, answer_id):
+@app.route("/answer/<question_id>/<answer_id>/<forum_user>/vote_up", methods=["POST"])
+def answer_vote(question_id, answer_id, forum_user):
     post_result = dict(request.form)["vote_answer"]
     # print(post_result)
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_answer_votes(answer_id, difference)
-
+    data_manager.gain_reputation_by_question("answer", forum_user, post_result)
     return redirect(url_for("display_question", question_id=question_id))
 
 

@@ -26,7 +26,7 @@
                     <div>Views: {{ question.view_number }}</div>
                     <div>Voted: {{ question.vote_number }}</div>
                     <div>
-                        <form action="{{ url_for("question_vote", question_id=question.id) }}" method="post">
+                        <form action="{{ url_for("question_vote", question_id=question.id, forum_user = question.forum_user_id) }}" method="post">
                             <button type="submit" id="vote_up" name = "vote_question" value="vote_up"> VOTE UP |</button>
                             <button type="submit" id="vote_down" name = "vote_question" value="vote_down"> VOTE DOWN </button>
                         </form>
@@ -139,7 +139,7 @@
                             {% endif %}
                             <div>Vote's number: {{ answer.vote_number }}</div>
                             <div>
-                                <form action="{{ url_for("answer_vote", answer_id=answer.id, question_id=question["id"]) }}" method="post">
+                                <form action="{{ url_for("answer_vote", answer_id=answer.id, question_id=question["id"], forum_user=answer.forum_user_id) }}" method="post">
                                     <button type="submit" id="vote_up" name = "vote_answer" value="vote_up"> VOTE UP |</button>
                                     <button type="submit"  id="vote_down" name = "vote_answer" value="vote_down"> VOTE DOWN</button>
                                 </form>
