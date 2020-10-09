@@ -5,6 +5,14 @@
 {% block page_title %}{{ question.title }}{% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="feedback-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <div class="main_div">
     <div class="main">
 

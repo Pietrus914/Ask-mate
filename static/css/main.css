@@ -598,3 +598,15 @@ img {
   position: relative;
   content: "\2716";
 }
+
+.feedback-rejection {
+    color: #960101;
+    text-shadow: #868585 1px 1px 2px;
+    font-size: larger;
+}
+
+.feedback-warning {
+    color: #c808c5;
+    text-shadow: #868585 1px 1px 2px;
+    font-size: larger;
+}
