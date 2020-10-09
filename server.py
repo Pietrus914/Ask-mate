@@ -115,9 +115,10 @@ def add_question_get():
         "image": "",
         "submission_time": None,
         "view_number": 0,
-        "vote_number": 0
+        "vote_number": 0,
+        "user_id": SESSION_ID
     }
-    response = make_response(render_template("add_update_question.html", username = SESSION_USERNAME, question=new_question))
+    response = make_response(render_template("add_update_question.html", user_id = SESSION_ID, username = SESSION_USERNAME, question=new_question))
     return response
 
 
@@ -127,6 +128,7 @@ def add_question_post():
     new_question['submission_time'] = util.get_current_date_time()
     new_question["view_number"] = 0
     new_question["vote_number"] = 0
+    new_question["user_id"] = session[SESSION_ID]
 
     uploaded_file = request.files['file']
     new_question['image'] = swap_image(uploaded_file)
