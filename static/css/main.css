@@ -428,7 +428,7 @@ h3.title_box {
 .key_info .icon {
     font-size: 1.3em;
     justify-content: flex-start;
-
+    width: 70%;
     }
 
 footer {
@@ -531,6 +531,7 @@ img {
 
 .user_reputation {
     justify-items: flex-start;
+    margin-left: 0.5em;
 }
 
 .transparent_rep {
