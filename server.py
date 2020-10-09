@@ -506,7 +506,7 @@ def logout():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    response = make_response(render_template('404.html'), 404, username = SESSION_USERNAME)
+    response = make_response(render_template('404.html', username = SESSION_USERNAME), 404)
     return response
 
 
