@@ -10,26 +10,33 @@
 <div class="content-wrapper">
     <header>
         <a id="header-title" href="{{url_for("main_page") }}">Question Forum</a>
-    </header>
-    <div id="signup">
-        {% if session[username] %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-            <a href="{{ url_for("login_user") }}">Log In</a>
+
+       {% if session[username] %}
+           <div class='header_link'>
+                <a href="{{ url_for("display_user", user_id = session[user_id]) }}">{{ session[username] }}</a>
+            </div>
+           <div class='header_link' id="logged_user">
+                <a href="{{ url_for("display_users") }}">USERS LIST</a>
+            </div>
         {% endif %}
-            /
-            <a href="{{ url_for("registration_user") }}">Sign Up</a>
-    </div>
+
+
+        <div class='header_link' id="signup">
+            {% if session[username] %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for("login_user") }}">Log In</a>
+            {% endif %}
+                /
+                <a href="{{ url_for("registration_user") }}">Sign Up</a>
+        </div>
 
 {# ten div logger_user powinien być z danymi użytkownika po zalogowaniu i z dostępnym linkiem do users page
 np.: display: flex, zawartość: mail, reputation, menu dostęne dla zalogowanego uzytkownika(linki) #}
 
-{% if session[username] %}
-    <div id="logged_user">
 
-        <a href="{{ url_for("display_users") }}">USERS LIST</a>
-    </div>
-{% endif %}
+    </header>
+
 
     <section>
         <h2 class="title text-center">{{ self.page_title() }}</h2>

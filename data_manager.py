@@ -88,8 +88,8 @@ def get_answers_by_question_id(cursor: RealDictCursor, question_id: int) -> list
 @database_common.connection_handler
 def add_question(cursor: RealDictCursor, new_question: dict) -> dict:
     query = f"""
-        INSERT INTO question (title, message, image, submission_time, view_number, vote_number)
-        VALUES (%(title)s, %(message)s, %(image)s, %(submission_time)s, %(view_number)s, %(vote_number)s)
+        INSERT INTO question (title, message, image, submission_time, view_number, vote_number, user_id)
+        VALUES (%(title)s, %(message)s, %(image)s, %(submission_time)s, %(view_number)s, %(vote_number)s, %(user_id)s)
         RETURNING id
         """
     cursor.execute(query, new_question)

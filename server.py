@@ -16,7 +16,7 @@ tag_keys = ["name", "count"]
 FORM_USERNAME = 'username'
 FORM_PASSWORD = 'password'
 SESSION_USERNAME = 'username'
-
+SESSION_ID = 'user_id'
 
 
 
@@ -30,7 +30,7 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    response = make_response(render_template("index.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    response = make_response(render_template("index.html", user_id = SESSION_ID, username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
 
@@ -41,7 +41,8 @@ def question_page():
     if len(request.args) != 0:
         questions = data_manager.get_questions_by_order(request.args.get("order_by"),
                                                         request.args.get("order_direction"))
-    return render_template("question_list.html", headers=headers, questions=questions, story_keys=story_keys)
+    response = make_response(render_template("question_list.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    return response
 
 
 @app.route("/search")
@@ -60,7 +61,8 @@ def display_search_question():
         if not answer["question_id"] in [x["id"] for x in questions]:
             questions.append(data_manager.get_question_by_id(answer["question_id"]))
 
-    return render_template("search_page.html", questions=questions, answers=answers_test, search_phrase=search_phrase)
+    response = make_response(render_template("search_page.html", username = SESSION_USERNAME, questions=questions, answers=answers_test, search_phrase=search_phrase))
+    return response
 
 
 @app.route("/uploads/<filename>")
@@ -90,7 +92,9 @@ def display_question(question_id):
     question_tag = data_manager.get_tag_by_question_id(question_id)
     # users = data_manager.get_all_users_basic_info()
 
-    return render_template("question.html", question=question,
+    response = make_response(render_template("question.html",
+                           username=SESSION_USERNAME,
+                           question=question,
                            answers=answers,
                            answers_headers=answers_headers,
                            question_comments=question_comments,
@@ -98,7 +102,8 @@ def display_question(question_id):
                            answer_comments=answer_comments,
                            question_tag=question_tag,
                            # users=users
-                           )
+                           ))
+    return response
 
 
 @app.route("/add")
@@ -110,9 +115,11 @@ def add_question_get():
         "image": "",
         "submission_time": None,
         "view_number": 0,
-        "vote_number": 0
+        "vote_number": 0,
+        "user_id": SESSION_ID
     }
-    return render_template("add_update_question.html", question=new_question)
+    response = make_response(render_template("add_update_question.html", user_id = SESSION_ID, username = SESSION_USERNAME, question=new_question))
+    return response
 
 
 @app.route("/add/post", methods=["POST"])
@@ -121,6 +128,7 @@ def add_question_post():
     new_question['submission_time'] = util.get_current_date_time()
     new_question["view_number"] = 0
     new_question["vote_number"] = 0
+    new_question["user_id"] = session[SESSION_ID]
 
     uploaded_file = request.files['file']
     new_question['image'] = swap_image(uploaded_file)
@@ -135,7 +143,8 @@ def edit_question_get(question_id):
     if question is None:
         return redirect(url_for("display_question", question_id=question_id))
     else:
-        return render_template("add_update_question.html", question=question)
+        response = make_response(render_template("add_update_question.html", username = SESSION_USERNAME, question=question))
+        return response
 
 
 @app.route("/question/<int:question_id>/edit/post", methods=["POST"])
@@ -185,7 +194,8 @@ def add_answer(question_id):
             "message": "",
             "image": ""
         }
-    return render_template("answer.html", question=question, answer=new_answer)
+    response = make_response(render_template("answer.html", username = SESSION_USERNAME, question=question, answer=new_answer))
+    return response
 
 
 @app.route("/question/<int:question_id>/new_answer/post", methods=["POST"])
@@ -216,7 +226,8 @@ def edit_answer_get(question_id, answer_id):
     if answer is None:
         return redirect(url_for("display_question", question_id=question_id))
     else:
-        return render_template("add_update_answer.html", question=question, answer=answer)
+        response = make_response(render_template("add_update_answer.html", username = SESSION_USERNAME, question=question, answer=answer))
+        return response
 
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer", methods=["POST"])
@@ -279,11 +290,13 @@ def new_question_comment(question_id):
         if request.method == "GET":
 
             question = data_manager.get_question_by_id(question_id)
-            return render_template("add_comment.html",
+            response =  make_response(render_template("add_comment.html",
+                                   username=SESSION_USERNAME,
                                    item=question,
                                    item_type="question",
-                                   url=url_for('new_question_comment', question_id=question_id))
-                                   # item_id = 'question_id')
+                                   url=url_for('new_question_comment', question_id=question_id)))
+                                   # item_id = 'question_id'))
+            return response
     else:
         return redirect(url_for('login_user'))
 
@@ -310,20 +323,24 @@ def update_comment_get(comment_id):
         # question_id = data_manager.get_question_id_by_comment_id(comment_id)
         if comment.get("question_id") != None:
             question = data_manager.get_question_by_comment_id(comment_id)
-            return render_template("update_comment.html",
+            response = make_response(render_template("update_comment.html",
+                                   username=SESSION_USERNAME,
                                    comment=comment,
                                    item=question,
-                                   item_type="question")
+                                   item_type="question"))
                                    # url_forr = url_for('update_question_comment', question_id = question["id"]),
-                                   # url = 'update_comment_post')
+                                   # url = 'update_comment_post'))
+            return response
 
         elif comment.get("answer_id") != None:
             answer = data_manager.get_answer_by_comment_id(comment_id)
-            return render_template("update_comment.html",
+            response = make_response(render_template("update_comment.html",
+                                   username=SESSION_USERNAME,
                                    comment=comment,
                                    item=answer,
-                                   item_type="answer")
-                                   # url='update_comment_post')
+                                   item_type="answer"))
+                                   # url='update_comment_post'))
+            return response
     else:
         return redirect(url_for('login_user'))
 
@@ -348,11 +365,13 @@ def new_answer_comment(answer_id):
 
         if request.method == "GET":
             answer = data_manager.get_answer_by_id(answer_id)
-            return render_template("add_comment.html",
+            response = make_response(render_template("add_comment.html",
+                                   username=SESSION_USERNAME,
                                    item=answer,
                                    item_type="answer",
-                                   url=url_for('new_answer_comment', answer_id=answer_id))
+                                   url=url_for('new_answer_comment', answer_id=answer_id)))
                                    # item_id = 'answer_id')
+            return response
     else:
         return redirect(url_for('login_user'))
 
@@ -378,8 +397,8 @@ def add_tag(question_id):
             if tag not in tags_in_question:
                 possible_tags.append(tag)
         
-        return render_template("add_tag.html", question_id=question_id, possible_tags=possible_tags)
-
+        response = make_response(render_template("add_tag.html", username = SESSION_USERNAME, question_id=question_id, possible_tags=possible_tags))
+        return response
 
 @app.route('/question/<question_id>/old-tag', methods=["POST"])
 def add_old_tag(question_id):
@@ -406,13 +425,14 @@ def tags_page():
     if len(request.args) != 0:
         tags = data_manager.get_tags_by_order(request.args.get("order_by"),
                                                         request.args.get("order_direction"))
-    return render_template("tag_list.html", tag_headers=tag_headers, tags=tags, tag_keys=tag_keys)
-
+    response = make_response(render_template("tag_list.html", username = SESSION_USERNAME, tag_headers=tag_headers, tags=tags, tag_keys=tag_keys))
+    return response
 
 @app.route('/registration/<ver>')
 @app.route('/registration')
 def registration_user(ver=None):
-    return render_template("registration.html", ver=ver)
+    response = make_response(render_template("registration.html", username = SESSION_USERNAME, ver=ver))
+    return response
 
 
 @app.route('/registration/post', methods=["POST"])
@@ -437,7 +457,8 @@ def display_users():
     #                  "Added question", "Added answers", "Added comments"]
     if session.get(FORM_USERNAME):
         all_users = data_manager.get_all_users()
-        return render_template('users.html', users=all_users)
+        response = make_response(render_template('users.html', username = SESSION_USERNAME, users=all_users))
+        return response
     else:
         return redirect(url_for('login_user'))
 
@@ -448,7 +469,8 @@ def display_user(user_id):
     if session.get(FORM_USERNAME):
         user = data_manager.get_user_details(user_id)
         activities = data_manager.get_dict_user_activities(user_id)
-        return render_template('user.html', user=user, activities=activities)
+        response = make_response(render_template('user.html', username = SESSION_USERNAME, user=user, activities=activities))
+        return response
     else:
         return redirect(url_for('login_user'))
 
@@ -465,11 +487,12 @@ def login_user_post():
     email = request.form[FORM_USERNAME]
     pwd = request.form[FORM_PASSWORD]
 
+
     check_email = data_manager.validate_login(email, pwd)
     if check_email:
         session[SESSION_USERNAME] = email
         user_id = data_manager.get_user_id_by_mail(email)
-        session['user_id'] = user_id
+        session[SESSION_ID] = user_id
         return redirect(url_for('main_page'))
     else:
         return redirect(url_for('login_user', ver="bad"))
@@ -483,7 +506,8 @@ def logout():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    response = make_response(render_template('404.html'), 404, username = SESSION_USERNAME)
+    return response
 
 
 if __name__ == "__main__":

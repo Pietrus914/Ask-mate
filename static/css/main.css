@@ -21,7 +21,7 @@ body {
     align-items: end;
 }
 
-.content-wrapper, header, footer {
+.content-wrapper, footer {
         background-color: rgba(200, 195, 195, 0.8);
 }
 
@@ -41,32 +41,33 @@ body {
 }
 
 header {
-    padding: 10px;
     margin-top: 5vh;
     color: #31434f;
     position: fixed;
     top: 0;
     left: 0;
-}
-#signup {
-    background-color: rgba(200, 195, 195, 0.8);
-    padding: 10px;
-    margin-top: 5vh;
-    color: #31434f;
-    position: fixed;
-    top: 0;
-    right: 0;
+    display: flex;
+    width: 100vw;
+    justify-content: space-between;
+
 }
 
-#logged_user {
+.header_link {
     background-color: rgba(200, 195, 195, 0.8);
     padding: 10px;
-    margin-top: 5vh;
-    color: #31434f;
-    position: fixed;
-    top: 0;
-    left: 80%;
+    margin-left: 3vw;
+    align-self: center;
 }
+
+#header-title {
+    text-transform: capitalize;
+    text-decoration: none;
+    font-size: 36px;
+    padding: 5px;
+    background-color: rgba(200, 195, 195, 0.8);
+    margin-right: auto;
+}
+
 
 h2 {
     margin: 10px 0;
@@ -206,11 +207,7 @@ a:hover {
     font-weight: bold;
               }
 
-#header-title {
-    text-transform: capitalize;
-    text-decoration: none;
-    font-size: 36px;
-}
+
 
 table {
     border: 1px solid #444747;
