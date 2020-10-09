@@ -16,7 +16,7 @@ tag_keys = ["name", "count"]
 FORM_USERNAME = 'username'
 FORM_PASSWORD = 'password'
 SESSION_USERNAME = 'username'
-
+SESSION_ID = 'user_id'
 
 
 
@@ -30,7 +30,7 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    response = make_response(render_template("index.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    response = make_response(render_template("index.html", user_id = SESSION_ID, username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
 
@@ -485,11 +485,12 @@ def login_user_post():
     email = request.form[FORM_USERNAME]
     pwd = request.form[FORM_PASSWORD]
 
+
     check_email = data_manager.validate_login(email, pwd)
     if check_email:
         session[SESSION_USERNAME] = email
         user_id = data_manager.get_user_id_by_mail(email)
-        session['user_id'] = user_id
+        session[SESSION_ID] = user_id
         return redirect(url_for('main_page'))
     else:
         return redirect(url_for('login_user', ver="bad"))
@@ -503,7 +504,7 @@ def logout():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    response = make_response(render_template('404.html'), 404, username = SESSION_USERNAME,)
+    response = make_response(render_template('404.html'), 404, username = SESSION_USERNAME)
     return response
 
 

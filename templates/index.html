@@ -36,25 +36,7 @@ np.: display: flex, zawartość: mail, reputation, menu dostęne dla zalogowaneg
 
 
     </header>
-{#    <div id="signup">#}
-{#        {% if session[username] %}#}
-{#            <a href="{{ url_for('logout') }}">Logout</a>#}
-{#        {% else %}#}
-{#            <a href="{{ url_for("login_user") }}">Log In</a>#}
-{#        {% endif %}#}
-{#            /#}
-{#            <a href="{{ url_for("registration_user") }}">Sign Up</a>#}
-{#    </div>#}
-{##}
-{# ten div logger_user powinien być z danymi użytkownika po zalogowaniu i z dostępnym linkiem do users page
-{#np.: display: flex, zawartość: mail, reputation, menu dostęne dla zalogowanego uzytkownika(linki) #}
-{##}
-{#{% if session[username] %}#}
-{#    <div id="logged_user">#}
-{##}
-{#        <a href="{{ url_for("display_users") }}">USERS LIST</a>#}
-{#    </div>#}
-{#{% endif %}#}
+
 
     <section>
         <h2 class="title text-center">{{ self.page_title() }}</h2>
