@@ -168,7 +168,8 @@ def edit_question_post(question_id):
 
 @app.route("/question/<question_id>/delete")
 def delete_question(question_id):
-    if session.get(FORM_USERNAME):
+    user_id = data_manager.get_user_id_by_activity('question', question_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         answer_pictures_paths = data_manager.get_answer_pictures_paths(question_id)
         util.delete_all_images(answer_pictures_paths)
 
@@ -252,7 +253,8 @@ def edit_answer_post(question_id, answer_id):
 
 @app.route("/answer/<question_id>/<answer_id>/delete")
 def delete_answer(question_id, answer_id):
-    if session.get(FORM_USERNAME):
+    user_id = data_manager.get_user_id_by_activity('answer', answer_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         answer_pictures_paths = data_manager.get_answer_id_pictures_paths(answer_id)
         util.delete_all_images(answer_pictures_paths)
 
@@ -311,7 +313,8 @@ def new_question_comment(question_id):
 
 @app.route('/comment/<comment_id>/edit', methods=["POST"])
 def update_comment_post(comment_id):
-    if session.get(FORM_USERNAME):
+    user_id = data_manager.get_user_id_by_activity('comment', comment_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         if request.method == "POST":
             details = dict(request.form)
             details["submission_time"] = util.get_current_date_time()
@@ -325,7 +328,8 @@ def update_comment_post(comment_id):
 
 @app.route('/comment/<comment_id>/edit', methods=["GET"])
 def update_comment_get(comment_id):
-    if session.get(FORM_USERNAME):
+    user_id = data_manager.get_user_id_by_activity('comment', comment_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         comment = data_manager.get_comment_by_id(comment_id)
         # question_id = data_manager.get_question_id_by_comment_id(comment_id)
         if comment.get("question_id") != None:
@@ -354,7 +358,8 @@ def update_comment_get(comment_id):
 
 @app.route('/comments/<comment_id>/delete')
 def delete_comment(comment_id):
-    if session.get(FORM_USERNAME):
+    user_id = data_manager.get_user_id_by_activity('comment', comment_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         question_id = data_manager.get_question_id_by_comment_id(comment_id)
         data_manager.delete_comment(comment_id)
         return redirect(url_for("display_question", question_id=question_id))

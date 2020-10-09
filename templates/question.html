@@ -79,7 +79,6 @@
                 {% if question_comments|length > 0 %}
                     <div class="comment">
                         <h3 class="title_box">Comments:</h3>
-    <!--{{ question_comments }}-->
                         {% for comment in question_comments %}
                             {% if comment.question_id == question.id %}
 

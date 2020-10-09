@@ -724,3 +724,12 @@ def get_reputation_by_id(cursor: RealDictCursor, user_id: int):
                 """
     cursor.execute(query)
     return cursor.fetchone()
+
+@database_common.connection_handler
+def get_user_id_by_activity(cursor: RealDictCursor, table, item_id: int):
+    query = f"""
+        SELECT user_id
+        FROM {table}
+        WHERE id = {item_id}"""
+    cursor.execute(query)
+    return cursor.fetchone()['user_id']
