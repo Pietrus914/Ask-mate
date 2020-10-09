@@ -1,8 +1,8 @@
-from flask import Flask, render_template, url_for, redirect, request, send_from_directory, make_response, session, escape
+from flask import Flask, render_template, url_for, redirect, request, send_from_directory, make_response, session, \
+    escape
 import data_manager, util
 import os
 from bcrypt import checkpw, hashpw, gensalt
-
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
@@ -19,7 +19,6 @@ SESSION_USERNAME = 'username'
 SESSION_ID = 'user_id'
 
 
-
 def swap_image(uploaded_file):
     """function to use when user can upload file"""
     if uploaded_file.filename != '':
@@ -30,7 +29,9 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    response = make_response(render_template("index.html", user_id = SESSION_ID, username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    response = make_response(
+        render_template("index.html", user_id=SESSION_ID, username=SESSION_USERNAME, headers=headers,
+                        questions=questions, story_keys=story_keys))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
 
@@ -41,7 +42,9 @@ def question_page():
     if len(request.args) != 0:
         questions = data_manager.get_questions_by_order(request.args.get("order_by"),
                                                         request.args.get("order_direction"))
-    response = make_response(render_template("question_list.html", username = SESSION_USERNAME, headers=headers, questions=questions, story_keys=story_keys))
+    response = make_response(
+        render_template("question_list.html", username=SESSION_USERNAME, headers=headers, questions=questions,
+                        story_keys=story_keys))
     return response
 
 
@@ -61,7 +64,9 @@ def display_search_question():
         if not answer["question_id"] in [x["id"] for x in questions]:
             questions.append(data_manager.get_question_by_id(answer["question_id"]))
 
-    response = make_response(render_template("search_page.html", username = SESSION_USERNAME, questions=questions, answers=answers_test, search_phrase=search_phrase))
+    response = make_response(
+        render_template("search_page.html", username=SESSION_USERNAME, questions=questions, answers=answers_test,
+                        search_phrase=search_phrase))
     return response
 
 
@@ -93,16 +98,16 @@ def display_question(question_id):
     # users = data_manager.get_all_users_basic_info()
 
     response = make_response(render_template("question.html",
-                           username=SESSION_USERNAME,
-                           question=question,
-                           answers=answers,
-                           answers_headers=answers_headers,
-                           question_comments=question_comments,
-                           comment_headers=comment_headers,
-                           answer_comments=answer_comments,
-                           question_tag=question_tag,
-                           # users=users
-                           ))
+                                             username=SESSION_USERNAME,
+                                             question=question,
+                                             answers=answers,
+                                             answers_headers=answers_headers,
+                                             question_comments=question_comments,
+                                             comment_headers=comment_headers,
+                                             answer_comments=answer_comments,
+                                             question_tag=question_tag,
+                                             # users=users
+                                             ))
     return response
 
 
@@ -118,7 +123,8 @@ def add_question_get():
         "vote_number": 0,
         "user_id": SESSION_ID
     }
-    response = make_response(render_template("add_update_question.html", user_id = SESSION_ID, username = SESSION_USERNAME, question=new_question))
+    response = make_response(render_template("add_update_question.html", user_id=SESSION_ID, username=SESSION_USERNAME,
+                                             question=new_question))
     return response
 
 
@@ -143,7 +149,8 @@ def edit_question_get(question_id):
     if question is None:
         return redirect(url_for("display_question", question_id=question_id))
     else:
-        response = make_response(render_template("add_update_question.html", username = SESSION_USERNAME, question=question))
+        response = make_response(
+            render_template("add_update_question.html", username=SESSION_USERNAME, question=question))
         return response
 
 
@@ -161,28 +168,29 @@ def edit_question_post(question_id):
 
 @app.route("/question/<question_id>/delete")
 def delete_question(question_id):
+    if session.get(FORM_USERNAME):
+        answer_pictures_paths = data_manager.get_answer_pictures_paths(question_id)
+        util.delete_all_images(answer_pictures_paths)
 
-    answer_pictures_paths = data_manager.get_answer_pictures_paths(question_id)
-    util.delete_all_images(answer_pictures_paths)
+        question_pictures_paths = data_manager.get_question_pictures_paths(question_id)
+        util.delete_all_images(question_pictures_paths)
 
-    question_pictures_paths = data_manager.get_question_pictures_paths(question_id)
-    util.delete_all_images(question_pictures_paths)
+        if data_manager.has_question_comment(question_id) is not None:
+            data_manager.delete_comment_for_question(question_id)
+        data_manager.delete_question_from_question_tag(question_id)
 
-    if data_manager.has_question_comment(question_id) is not None:
-        data_manager.delete_comment_for_question(question_id)
-    data_manager.delete_question_from_question_tag(question_id)
+        data_manager.delete_comment_for_answers_for_question(question_id)
+        data_manager.delete_answers_for_question(question_id)
 
-    data_manager.delete_comment_for_answers_for_question(question_id)
-    data_manager.delete_answers_for_question(question_id)
+        data_manager.delete_question(question_id)
 
-    data_manager.delete_question(question_id)
-
-    return redirect(url_for("question_page"))
+        return redirect(url_for("question_page"))
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route("/question/<question_id>/new_answer")
 def add_answer(question_id):
-
     question = data_manager.get_question_by_id(question_id)
     new_answer = \
         {
@@ -194,13 +202,13 @@ def add_answer(question_id):
             "message": "",
             "image": ""
         }
-    response = make_response(render_template("answer.html", username = SESSION_USERNAME, question=question, answer=new_answer))
+    response = make_response(
+        render_template("answer.html", username=SESSION_USERNAME, question=question, answer=new_answer))
     return response
 
 
 @app.route("/question/<int:question_id>/new_answer/post", methods=["POST"])
 def add_answer_post(question_id):
-
     new_answer = dict(request.form)
     new_answer["submission_time"] = util.get_current_date_time()
     new_answer["question_id"] = question_id
@@ -218,7 +226,6 @@ def add_answer_post(question_id):
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer")
 def edit_answer_get(question_id, answer_id):
-
     question = data_manager.get_question_by_id(question_id)
 
     answer = data_manager.get_answer_by_id(answer_id)
@@ -226,13 +233,13 @@ def edit_answer_get(question_id, answer_id):
     if answer is None:
         return redirect(url_for("display_question", question_id=question_id))
     else:
-        response = make_response(render_template("add_update_answer.html", username = SESSION_USERNAME, question=question, answer=answer))
+        response = make_response(
+            render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer))
         return response
 
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer", methods=["POST"])
 def edit_answer_post(question_id, answer_id):
-
     edited_answer = dict(request.form)
 
     uploaded_file = request.files['file']
@@ -245,16 +252,18 @@ def edit_answer_post(question_id, answer_id):
 
 @app.route("/answer/<question_id>/<answer_id>/delete")
 def delete_answer(question_id, answer_id):
+    if session.get(FORM_USERNAME):
+        answer_pictures_paths = data_manager.get_answer_id_pictures_paths(answer_id)
+        util.delete_all_images(answer_pictures_paths)
 
-    answer_pictures_paths = data_manager.get_answer_id_pictures_paths(answer_id)
-    util.delete_all_images(answer_pictures_paths)
+        if data_manager.has_answer_comment(answer_id) is not None:
+            data_manager.delete_comment_for_answer(answer_id)
 
-    if data_manager.has_answer_comment(answer_id) is not None:
-        data_manager.delete_comment_for_answer(answer_id)
+        data_manager.delete_answer_from_answers(answer_id)
 
-    data_manager.delete_answer_from_answers(answer_id)
-
-    return redirect(url_for("display_question", question_id=question_id))
+        return redirect(url_for("display_question", question_id=question_id))
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route("/question/<question_id>/<forum_user>/vote_up", methods=["POST"])
@@ -288,18 +297,16 @@ def new_question_comment(question_id):
 
             return redirect(url_for("display_question", question_id=question_id))
         if request.method == "GET":
-
             question = data_manager.get_question_by_id(question_id)
-            response =  make_response(render_template("add_comment.html",
-                                   username=SESSION_USERNAME,
-                                   item=question,
-                                   item_type="question",
-                                   url=url_for('new_question_comment', question_id=question_id)))
-                                   # item_id = 'question_id'))
+            response = make_response(render_template("add_comment.html",
+                                                     username=SESSION_USERNAME,
+                                                     item=question,
+                                                     item_type="question",
+                                                     url=url_for('new_question_comment', question_id=question_id)))
+            # item_id = 'question_id'))
             return response
     else:
         return redirect(url_for('login_user'))
-
 
 
 @app.route('/comment/<comment_id>/edit', methods=["POST"])
@@ -324,22 +331,22 @@ def update_comment_get(comment_id):
         if comment.get("question_id") != None:
             question = data_manager.get_question_by_comment_id(comment_id)
             response = make_response(render_template("update_comment.html",
-                                   username=SESSION_USERNAME,
-                                   comment=comment,
-                                   item=question,
-                                   item_type="question"))
-                                   # url_forr = url_for('update_question_comment', question_id = question["id"]),
-                                   # url = 'update_comment_post'))
+                                                     username=SESSION_USERNAME,
+                                                     comment=comment,
+                                                     item=question,
+                                                     item_type="question"))
+            # url_forr = url_for('update_question_comment', question_id = question["id"]),
+            # url = 'update_comment_post'))
             return response
 
         elif comment.get("answer_id") != None:
             answer = data_manager.get_answer_by_comment_id(comment_id)
             response = make_response(render_template("update_comment.html",
-                                   username=SESSION_USERNAME,
-                                   comment=comment,
-                                   item=answer,
-                                   item_type="answer"))
-                                   # url='update_comment_post'))
+                                                     username=SESSION_USERNAME,
+                                                     comment=comment,
+                                                     item=answer,
+                                                     item_type="answer"))
+            # url='update_comment_post'))
             return response
     else:
         return redirect(url_for('login_user'))
@@ -347,9 +354,12 @@ def update_comment_get(comment_id):
 
 @app.route('/comments/<comment_id>/delete')
 def delete_comment(comment_id):
-    question_id = data_manager.get_question_id_by_comment_id(comment_id)
-    data_manager.delete_comment(comment_id)
-    return redirect(url_for("display_question", question_id=question_id))
+    if session.get(FORM_USERNAME):
+        question_id = data_manager.get_question_id_by_comment_id(comment_id)
+        data_manager.delete_comment(comment_id)
+        return redirect(url_for("display_question", question_id=question_id))
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route('/answer/<answer_id>/new-comment', methods=["GET", "POST"])
@@ -366,11 +376,11 @@ def new_answer_comment(answer_id):
         if request.method == "GET":
             answer = data_manager.get_answer_by_id(answer_id)
             response = make_response(render_template("add_comment.html",
-                                   username=SESSION_USERNAME,
-                                   item=answer,
-                                   item_type="answer",
-                                   url=url_for('new_answer_comment', answer_id=answer_id)))
-                                   # item_id = 'answer_id')
+                                                     username=SESSION_USERNAME,
+                                                     item=answer,
+                                                     item_type="answer",
+                                                     url=url_for('new_answer_comment', answer_id=answer_id)))
+            # item_id = 'answer_id')
             return response
     else:
         return redirect(url_for('login_user'))
@@ -378,9 +388,7 @@ def new_answer_comment(answer_id):
 
 @app.route('/question/<question_id>/new-tag', methods=["GET", "POST"])
 def add_tag(question_id):
-
     if request.method == "POST":
-
         tag_name = dict(request.form)
 
         tag_id = data_manager.add_question_tag(tag_name).get('id')
@@ -396,13 +404,14 @@ def add_tag(question_id):
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-        
-        response = make_response(render_template("add_tag.html", username = SESSION_USERNAME, question_id=question_id, possible_tags=possible_tags))
+
+        response = make_response(render_template("add_tag.html", username=SESSION_USERNAME, question_id=question_id,
+                                                 possible_tags=possible_tags))
         return response
+
 
 @app.route('/question/<question_id>/old-tag', methods=["POST"])
 def add_old_tag(question_id):
-
     tag_name = dict(request.form)
     tag_old_id = data_manager.get_tag_id_by_name(tag_name['tag_name']).get('id')
     data_manager.add_question_tag_id(tag_old_id, question_id)
@@ -424,14 +433,17 @@ def tags_page():
 
     if len(request.args) != 0:
         tags = data_manager.get_tags_by_order(request.args.get("order_by"),
-                                                        request.args.get("order_direction"))
-    response = make_response(render_template("tag_list.html", username = SESSION_USERNAME, tag_headers=tag_headers, tags=tags, tag_keys=tag_keys))
+                                              request.args.get("order_direction"))
+    response = make_response(
+        render_template("tag_list.html", username=SESSION_USERNAME, tag_headers=tag_headers, tags=tags,
+                        tag_keys=tag_keys))
     return response
+
 
 @app.route('/registration/<ver>')
 @app.route('/registration')
 def registration_user(ver=None):
-    response = make_response(render_template("registration.html", username = SESSION_USERNAME, ver=ver))
+    response = make_response(render_template("registration.html", username=SESSION_USERNAME, ver=ver))
     return response
 
 
@@ -457,7 +469,7 @@ def display_users():
     #                  "Added question", "Added answers", "Added comments"]
     if session.get(FORM_USERNAME):
         all_users = data_manager.get_all_users()
-        response = make_response(render_template('users.html', username = SESSION_USERNAME, users=all_users))
+        response = make_response(render_template('users.html', username=SESSION_USERNAME, users=all_users))
         return response
     else:
         return redirect(url_for('login_user'))
@@ -465,11 +477,11 @@ def display_users():
 
 @app.route('/user/<user_id>')
 def display_user(user_id):
-
     if session.get(FORM_USERNAME):
         user = data_manager.get_user_details(user_id)
         activities = data_manager.get_dict_user_activities(user_id)
-        response = make_response(render_template('user.html', username = SESSION_USERNAME, user=user, activities=activities))
+        response = make_response(
+            render_template('user.html', username=SESSION_USERNAME, user=user, activities=activities))
         return response
     else:
         return redirect(url_for('login_user'))
@@ -478,7 +490,7 @@ def display_user(user_id):
 @app.route('/login/<ver>')
 @app.route('/login')
 def login_user(ver=None):
-    response = make_response(render_template('login.html', ver = ver, username = FORM_USERNAME, password = FORM_PASSWORD))
+    response = make_response(render_template('login.html', ver=ver, username=FORM_USERNAME, password=FORM_PASSWORD))
     return response
 
 
@@ -486,7 +498,6 @@ def login_user(ver=None):
 def login_user_post():
     email = request.form[FORM_USERNAME]
     pwd = request.form[FORM_PASSWORD]
-
 
     check_email = data_manager.validate_login(email, pwd)
     if check_email:
@@ -506,7 +517,7 @@ def logout():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    response = make_response(render_template('404.html', username = SESSION_USERNAME), 404)
+    response = make_response(render_template('404.html', username=SESSION_USERNAME), 404)
     return response
 
 
