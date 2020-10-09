@@ -570,3 +570,31 @@ img {
 
 /
  */
+
+/* The message box is shown when the user clicks on the password field */
+#message {
+  position: relative;
+  margin-top: 10px;
+}
+
+
+
+/* Add a green text color and a checkmark when the requirements are right */
+.valid {
+  color: green;
+}
+
+.valid:before {
+  position: relative;
+  content: "\2713 ";
+}
+
+/* Add a red text color and an "x" icon when the requirements are wrong */
+.invalid {
+  color: red;
+}
+
+.invalid:before {
+  position: relative;
+  content: "\2716";
+}
