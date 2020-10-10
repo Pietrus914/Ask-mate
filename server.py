@@ -195,21 +195,24 @@ def delete_question(question_id):
 
 @app.route("/question/<question_id>/new_answer")
 def add_answer(question_id):
-    question = data_manager.get_question_by_id(question_id)
-    new_answer = \
-        {
-            "answer_id": None,
-            "submission_time": None,
-            "view_number": 0,
-            "vote_number": 0,
-            "id": None,
-            "message": "",
-            "image": "",
-            "user_id": SESSION_ID
-        }
-    response = make_response(
-        render_template("answer.html", user_id=SESSION_ID, username=SESSION_USERNAME, question=question, answer=new_answer))
-    return response
+    if session.get(FORM_USERNAME):
+        question = data_manager.get_question_by_id(question_id)
+        new_answer = \
+            {
+                "answer_id": None,
+                "submission_time": None,
+                "view_number": 0,
+                "vote_number": 0,
+                "id": None,
+                "message": "",
+                "image": "",
+                "user_id": SESSION_ID
+            }
+        response = make_response(
+            render_template("answer.html", user_id=SESSION_ID, username=SESSION_USERNAME, question=question, answer=new_answer))
+        return response
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route("/question/<int:question_id>/new_answer/post", methods=["POST"])
@@ -232,16 +235,20 @@ def add_answer_post(question_id):
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer")
 def edit_answer_get(question_id, answer_id):
+    user_id = data_manager.get_user_id_by_activity('answer', answer_id)
     question = data_manager.get_question_by_id(question_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
+        answer = data_manager.get_answer_by_id(answer_id)
 
-    answer = data_manager.get_answer_by_id(answer_id)
-
-    if answer is None:
-        return redirect(url_for("display_question", question_id=question_id))
+        if answer is None:
+            return redirect(url_for("display_question", question_id=question_id))
+        else:
+            response = make_response(
+                render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer))
+            return response
     else:
-        response = make_response(
-            render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer))
-        return response
+        flash("Update option is available only for the author!", "warning")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer", methods=["POST"])
