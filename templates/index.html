@@ -14,7 +14,7 @@
        {% if session[username] %}
            <div class='header_link'>
                 <a href="{{ url_for("display_user", user_id = session['user_id']) }}">{{ session[username] }}</a>
-                {% with user=user %}{% include 'reputation.html' %}{% endwith %}
+                {% with user=session['reputation'] %}{% include 'reputation.html' %}{% endwith %}
            </div>
            <div class='header_link' id="logged_user">
                 <a href="{{ url_for("display_users") }}">USERS LIST</a>

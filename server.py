@@ -18,6 +18,7 @@ FORM_USERNAME = 'username'
 FORM_PASSWORD = 'password'
 SESSION_USERNAME = 'username'
 SESSION_ID = 'user_id'
+SESSION_REPUTATION = 'reputation'
 
 
 def swap_image(uploaded_file):
@@ -30,13 +31,9 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    user_reputation = None
-    if session.get(SESSION_ID) != None:
-        user_reputation = data_manager.get_reputation_by_id(session[SESSION_ID])
-
     response = make_response(render_template("index.html", user_id=SESSION_ID,
                             username=SESSION_USERNAME, headers=headers,
-                            questions=questions, story_keys=story_keys, user=user_reputation))
+                            questions=questions, story_keys=story_keys))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
 
@@ -521,6 +518,7 @@ def login_user_post():
         session[SESSION_USERNAME] = email
         user_id = data_manager.get_user_id_by_mail(email)
         session[SESSION_ID] = user_id
+        session[SESSION_REPUTATION] = data_manager.get_reputation_by_id(session[SESSION_ID])
         return redirect(url_for('main_page'))
     else:
         return redirect(url_for('login_user', ver="bad"))
