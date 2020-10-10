@@ -204,10 +204,11 @@ def add_answer(question_id):
             "vote_number": 0,
             "id": None,
             "message": "",
-            "image": ""
+            "image": "",
+            "user_id": SESSION_ID
         }
     response = make_response(
-        render_template("answer.html", username=SESSION_USERNAME, question=question, answer=new_answer))
+        render_template("answer.html", user_id=SESSION_ID, username=SESSION_USERNAME, question=question, answer=new_answer))
     return response
 
 
@@ -217,6 +218,7 @@ def add_answer_post(question_id):
     new_answer["submission_time"] = util.get_current_date_time()
     new_answer["question_id"] = question_id
     new_answer["vote_number"] = 0
+    new_answer["user_id"] = session[SESSION_ID]
 
     uploaded_file = request.files['file']
     if uploaded_file.filename != '':
