@@ -30,9 +30,13 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    response = make_response(
-        render_template("index.html", user_id=SESSION_ID, username=SESSION_USERNAME, headers=headers,
-                        questions=questions, story_keys=story_keys))
+    user_reputation = None
+    if session.get(SESSION_ID) != None:
+        user_reputation = data_manager.get_reputation_by_id(session[SESSION_ID])
+
+    response = make_response(render_template("index.html", user_id=SESSION_ID,
+                            username=SESSION_USERNAME, headers=headers,
+                            questions=questions, story_keys=story_keys, user=user_reputation))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
 
