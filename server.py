@@ -115,19 +115,22 @@ def display_question(question_id):
 
 @app.route("/add")
 def add_question_get():
-    new_question = {
-        "id": None,
-        "title": "",
-        "message": "",
-        "image": "",
-        "submission_time": None,
-        "view_number": 0,
-        "vote_number": 0,
-        "user_id": SESSION_ID
-    }
-    response = make_response(render_template("add_update_question.html", user_id=SESSION_ID, username=SESSION_USERNAME,
-                                             question=new_question))
-    return response
+    if session.get(FORM_USERNAME):
+        new_question = {
+            "id": None,
+            "title": "",
+            "message": "",
+            "image": "",
+            "submission_time": None,
+            "view_number": 0,
+            "vote_number": 0,
+            "user_id": SESSION_ID
+        }
+        response = make_response(render_template("add_update_question.html", user_id=SESSION_ID, username=SESSION_USERNAME,
+                                                 question=new_question))
+        return response
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route("/add/post", methods=["POST"])
@@ -147,13 +150,18 @@ def add_question_post():
 
 @app.route("/question/<int:question_id>/edit")
 def edit_question_get(question_id):
+    user_id = data_manager.get_user_id_by_activity('question', question_id)
     question = data_manager.get_question_by_id(question_id)
-    if question is None:
-        return redirect(url_for("display_question", question_id=question_id))
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
+        if question is None:
+            return redirect(url_for("display_question", question_id=question_id))
+        else:
+            response = make_response(
+                render_template("add_update_question.html", username=SESSION_USERNAME, question=question))
+            return response
     else:
-        response = make_response(
-            render_template("add_update_question.html", username=SESSION_USERNAME, question=question))
-        return response
+        flash("Update option is available only for the author!", "warning")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route("/question/<int:question_id>/edit/post", methods=["POST"])
