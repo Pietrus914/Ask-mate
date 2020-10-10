@@ -13,7 +13,7 @@
 
        {% if session[username] %}
            <div class='header_link'>
-                <a href="{{ url_for("display_user", user_id = session[user_id]) }}">{{ session[username] }}</a>
+                <a href="{{ url_for("display_user", user_id = session['user_id']) }}">{{ session[username] }}</a>
             </div>
            <div class='header_link' id="logged_user">
                 <a href="{{ url_for("display_users") }}">USERS LIST</a>
