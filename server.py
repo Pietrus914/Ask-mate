@@ -1,5 +1,6 @@
-from flask import Flask, render_template, url_for, redirect, request, send_from_directory, make_response, session, \
-    escape
+from flask import Flask, render_template, url_for, redirect,\
+    request, send_from_directory, make_response, session, \
+    escape, flash
 import data_manager, util
 import os
 from bcrypt import checkpw, hashpw, gensalt
@@ -17,6 +18,7 @@ FORM_USERNAME = 'username'
 FORM_PASSWORD = 'password'
 SESSION_USERNAME = 'username'
 SESSION_ID = 'user_id'
+SESSION_REPUTATION = 'reputation'
 
 
 def swap_image(uploaded_file):
@@ -29,9 +31,9 @@ def swap_image(uploaded_file):
 @app.route("/")
 def main_page():
     questions = data_manager.get_questions(5)
-    response = make_response(
-        render_template("index.html", user_id=SESSION_ID, username=SESSION_USERNAME, headers=headers,
-                        questions=questions, story_keys=story_keys))
+    response = make_response(render_template("index.html", user_id=SESSION_ID,
+                            username=SESSION_USERNAME, headers=headers,
+                            questions=questions, story_keys=story_keys))
     # return render_template("index.html", headers=headers, questions=questions, story_keys=story_keys)
     return response
 
@@ -187,7 +189,8 @@ def delete_question(question_id):
 
         return redirect(url_for("question_page"))
     else:
-        return redirect(url_for('login_user'))
+        flash("Delete option is available only for the author!", "rejection")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route("/question/<question_id>/new_answer")
@@ -265,7 +268,8 @@ def delete_answer(question_id, answer_id):
 
         return redirect(url_for("display_question", question_id=question_id))
     else:
-        return redirect(url_for('login_user'))
+        flash("Delete option is available only for the author!", "rejection")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route("/question/<question_id>/<forum_user>/vote_up", methods=["POST"])
@@ -314,24 +318,26 @@ def new_question_comment(question_id):
 @app.route('/comment/<comment_id>/edit', methods=["POST"])
 def update_comment_post(comment_id):
     user_id = data_manager.get_user_id_by_activity('comment', comment_id)
+    question_id = data_manager.get_question_id_by_comment_id(comment_id)
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         if request.method == "POST":
             details = dict(request.form)
             details["submission_time"] = util.get_current_date_time()
 
             data_manager.update_comment(details, comment_id)
-            question_id = data_manager.get_question_id_by_comment_id(comment_id)
             return redirect(url_for("display_question", question_id=question_id))
     else:
-        return redirect(url_for('login_user'))
+        flash("Update option is available only for the author!", "warning")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route('/comment/<comment_id>/edit', methods=["GET"])
 def update_comment_get(comment_id):
     user_id = data_manager.get_user_id_by_activity('comment', comment_id)
+    question_id = data_manager.get_question_id_by_comment_id(comment_id)
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         comment = data_manager.get_comment_by_id(comment_id)
-        # question_id = data_manager.get_question_id_by_comment_id(comment_id)
+
         if comment.get("question_id") != None:
             question = data_manager.get_question_by_comment_id(comment_id)
             response = make_response(render_template("update_comment.html",
@@ -353,18 +359,21 @@ def update_comment_get(comment_id):
             # url='update_comment_post'))
             return response
     else:
-        return redirect(url_for('login_user'))
+        flash("Update option is available only for the author!", "warning")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route('/comments/<comment_id>/delete')
 def delete_comment(comment_id):
     user_id = data_manager.get_user_id_by_activity('comment', comment_id)
+    question_id = data_manager.get_question_id_by_comment_id(comment_id)
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
-        question_id = data_manager.get_question_id_by_comment_id(comment_id)
+        # question_id = data_manager.get_question_id_by_comment_id(comment_id)
         data_manager.delete_comment(comment_id)
         return redirect(url_for("display_question", question_id=question_id))
     else:
-        return redirect(url_for('login_user'))
+        flash("Delete option is available only for the author!", "rejection")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route('/answer/<answer_id>/new-comment', methods=["GET", "POST"])
@@ -509,6 +518,7 @@ def login_user_post():
         session[SESSION_USERNAME] = email
         user_id = data_manager.get_user_id_by_mail(email)
         session[SESSION_ID] = user_id
+        session[SESSION_REPUTATION] = data_manager.get_reputation_by_id(session[SESSION_ID])
         return redirect(url_for('main_page'))
     else:
         return redirect(url_for('login_user', ver="bad"))
