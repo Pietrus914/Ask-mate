@@ -57,6 +57,11 @@ header {
     padding: 10px;
     margin-left: 3vw;
     align-self: center;
+    display: flex;
+}
+
+.header_link .table_cell {
+    padding: 0;
 }
 
 #header-title {
@@ -428,9 +433,17 @@ h3.title_box {
 .key_info .icon {
     font-size: 1.3em;
     justify-content: flex-start;
-    width: 70%;
+    /*width: 70%;*/
     }
 
+.key_info .table_cell {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.key_info div {
+    text-align: center;
+}
 footer {
     position: fixed;
     bottom: 0;
