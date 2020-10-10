@@ -414,13 +414,14 @@ def add_tag(question_id):
 
     if request.method == "GET":
         possible_tags = []
-        all_tags = data_manager.get_tag_to_list()
+        all_tags = data_manager.get_all_tags()
         tags_in_question = data_manager.get_tag_from_question(question_id)
-
+        print(all_tags)
+        print(tags_in_question)
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-
+        print(possible_tags)
         response = make_response(render_template("add_tag.html", username=SESSION_USERNAME, question_id=question_id,
                                                  possible_tags=possible_tags))
         return response

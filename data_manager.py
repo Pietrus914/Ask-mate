@@ -505,6 +505,16 @@ def delete_tag(cursor: RealDictCursor, tag_id: int):
 
 
 @database_common.connection_handler
+def get_all_tags(cursor: RealDictCursor):
+    query = f"""
+        select (name)
+        from tag
+        """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
 def get_tag_to_list(cursor: RealDictCursor):
     query = f"""
         select (name), count (name)
