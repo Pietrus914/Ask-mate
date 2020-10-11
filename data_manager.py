@@ -409,8 +409,8 @@ def get_answer_comments_by_question_id(cursor: RealDictCursor, question_id: int)
 @database_common.connection_handler
 def add_answer(cursor: RealDictCursor, new_answer: dict):
     query = f"""
-            INSERT INTO  answer (submission_time, vote_number, question_id, message, image)
-            VALUES (%(submission_time)s, %(vote_number)s, %(question_id)s, %(message)s, %(image)s)
+            INSERT INTO  answer (submission_time, vote_number, question_id, message, image, user_id)
+            VALUES (%(submission_time)s, %(vote_number)s, %(question_id)s, %(message)s, %(image)s, %(user_id)s)
             RETURNING id
             """
     cursor.execute(query, new_answer)
@@ -502,6 +502,16 @@ def delete_tag(cursor: RealDictCursor, tag_id: int):
         WHERE tag_id = {tag_id} """
     cursor.execute(query)
     return
+
+
+@database_common.connection_handler
+def get_all_tags(cursor: RealDictCursor):
+    query = f"""
+        select (name)
+        from tag
+        """
+    cursor.execute(query)
+    return cursor.fetchall()
 
 
 @database_common.connection_handler

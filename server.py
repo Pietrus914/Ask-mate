@@ -115,19 +115,22 @@ def display_question(question_id):
 
 @app.route("/add")
 def add_question_get():
-    new_question = {
-        "id": None,
-        "title": "",
-        "message": "",
-        "image": "",
-        "submission_time": None,
-        "view_number": 0,
-        "vote_number": 0,
-        "user_id": SESSION_ID
-    }
-    response = make_response(render_template("add_update_question.html", user_id=SESSION_ID, username=SESSION_USERNAME,
-                                             question=new_question))
-    return response
+    if session.get(FORM_USERNAME):
+        new_question = {
+            "id": None,
+            "title": "",
+            "message": "",
+            "image": "",
+            "submission_time": None,
+            "view_number": 0,
+            "vote_number": 0,
+            "user_id": SESSION_ID
+        }
+        response = make_response(render_template("add_update_question.html", user_id=SESSION_ID, username=SESSION_USERNAME,
+                                                 question=new_question))
+        return response
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route("/add/post", methods=["POST"])
@@ -147,13 +150,18 @@ def add_question_post():
 
 @app.route("/question/<int:question_id>/edit")
 def edit_question_get(question_id):
+    user_id = data_manager.get_user_id_by_activity('question', question_id)
     question = data_manager.get_question_by_id(question_id)
-    if question is None:
-        return redirect(url_for("display_question", question_id=question_id))
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
+        if question is None:
+            return redirect(url_for("display_question", question_id=question_id))
+        else:
+            response = make_response(
+                render_template("add_update_question.html", username=SESSION_USERNAME, question=question))
+            return response
     else:
-        response = make_response(
-            render_template("add_update_question.html", username=SESSION_USERNAME, question=question))
-        return response
+        flash("Update option is available only for the author!", "warning")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route("/question/<int:question_id>/edit/post", methods=["POST"])
@@ -195,20 +203,24 @@ def delete_question(question_id):
 
 @app.route("/question/<question_id>/new_answer")
 def add_answer(question_id):
-    question = data_manager.get_question_by_id(question_id)
-    new_answer = \
-        {
-            "answer_id": None,
-            "submission_time": None,
-            "view_number": 0,
-            "vote_number": 0,
-            "id": None,
-            "message": "",
-            "image": ""
-        }
-    response = make_response(
-        render_template("answer.html", username=SESSION_USERNAME, question=question, answer=new_answer))
-    return response
+    if session.get(FORM_USERNAME):
+        question = data_manager.get_question_by_id(question_id)
+        new_answer = \
+            {
+                "answer_id": None,
+                "submission_time": None,
+                "view_number": 0,
+                "vote_number": 0,
+                "id": None,
+                "message": "",
+                "image": "",
+                "user_id": SESSION_ID
+            }
+        response = make_response(
+            render_template("answer.html", user_id=SESSION_ID, username=SESSION_USERNAME, question=question, answer=new_answer))
+        return response
+    else:
+        return redirect(url_for('login_user'))
 
 
 @app.route("/question/<int:question_id>/new_answer/post", methods=["POST"])
@@ -217,6 +229,7 @@ def add_answer_post(question_id):
     new_answer["submission_time"] = util.get_current_date_time()
     new_answer["question_id"] = question_id
     new_answer["vote_number"] = 0
+    new_answer["user_id"] = session[SESSION_ID]
 
     uploaded_file = request.files['file']
     if uploaded_file.filename != '':
@@ -230,16 +243,20 @@ def add_answer_post(question_id):
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer")
 def edit_answer_get(question_id, answer_id):
+    user_id = data_manager.get_user_id_by_activity('answer', answer_id)
     question = data_manager.get_question_by_id(question_id)
+    if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
+        answer = data_manager.get_answer_by_id(answer_id)
 
-    answer = data_manager.get_answer_by_id(answer_id)
-
-    if answer is None:
-        return redirect(url_for("display_question", question_id=question_id))
+        if answer is None:
+            return redirect(url_for("display_question", question_id=question_id))
+        else:
+            response = make_response(
+                render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer))
+            return response
     else:
-        response = make_response(
-            render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer))
-        return response
+        flash("Update option is available only for the author!", "warning")
+        return redirect(url_for('display_question', question_id=question_id))
 
 
 @app.route("/question/<int:question_id>/<int:answer_id>/edit-answer", methods=["POST"])
@@ -412,13 +429,14 @@ def add_tag(question_id):
 
     if request.method == "GET":
         possible_tags = []
-        all_tags = data_manager.get_tag_to_list()
+        all_tags = data_manager.get_all_tags()
         tags_in_question = data_manager.get_tag_from_question(question_id)
-
+        print(all_tags)
+        print(tags_in_question)
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-
+        print(possible_tags)
         response = make_response(render_template("add_tag.html", username=SESSION_USERNAME, question_id=question_id,
                                                  possible_tags=possible_tags))
         return response
