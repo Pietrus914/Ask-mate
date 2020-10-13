@@ -454,7 +454,7 @@ def add_old_tag(question_id):
 @app.route('/tags/<tag_id>/delete')
 def delete_tag(tag_id):
     question_id = data_manager.get_question_id_by_tag_id(tag_id)
-    data_manager.delete_tag(tag_id)
+    data_manager.delete_tag(tag_id, question_id)
 
     return redirect(url_for("display_question", question_id=question_id))
 

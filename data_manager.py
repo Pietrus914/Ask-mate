@@ -496,10 +496,10 @@ def get_tag_id_by_name(cursor: RealDictCursor, tag_name: str):
 
 
 @database_common.connection_handler
-def delete_tag(cursor: RealDictCursor, tag_id: int):
+def delete_tag(cursor: RealDictCursor, tag_id, question_id : int):
     query = f"""
         DELETE FROM question_tag
-        WHERE tag_id = {tag_id} """
+        WHERE tag_id = {tag_id} AND question_id = {question_id} """
     cursor.execute(query)
     return
 
