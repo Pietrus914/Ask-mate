@@ -45,16 +45,18 @@
 
                 <p class="message">
                     <h4>{{ question.message }}</h4>
-                        {% if question.image %}
-                            {% if 'http' not in question.image %}
-                                <p>
-                                    <img src="{{ url_for('get_img', filename=get_filename(question.image)) }}" alt="picture added by user" >
-                                </p>
-                            {% else %}
-                                <p>
-                                    <img src="{{ question.image }}" alt="picture added by user" style="max-height: 25vw">
-                                </p>
-                            {% endif %}
+                        {% if question.image == 1 %}
+                            {% for image in question_image %}
+                                {% if 'http' not in image.image %}
+                                    <p>
+                                        <img src="{{ url_for('get_img', filename=get_filename(image.image)) }}" alt="picture added by user" >
+                                    </p>
+                                {% else %}
+                                    <p>
+                                        <img src="{{ image.image }}" alt="picture added by user" style="max-height: 25vw">
+                                    </p>
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
                 </p>
 
@@ -158,16 +160,18 @@
                         <div>
                             <p class="message">
                             <h4>{{ answer.message }}</h4>
-                                {% if answer.image %}
-                                    {% if 'http' not in answer.image %}
-                                        <p>
-                                            <img src="{{ url_for("get_img",filename=get_filename(answer.image)) }}" alt="picture added by user" style="width: 256px"></td>
-                                        </p>
-                                    {% else %}
-                                        <p>
-                                            <img src="{{ answer.image }}" alt="picture added by user" style="width: 256px"></td>
-                                        </p>
-                                    {% endif %}
+                                {% if answer.image == 1%}
+                                    {% for image in answers_images[answer.id] %}
+                                        {% if 'http' not in image.image %}
+                                            <p>
+                                                <img src="{{ url_for("get_img",filename=get_filename(image.image)) }}" alt="picture added by user" style="width: 256px"></td>
+                                            </p>
+                                        {% else %}
+                                            <p>
+                                                <img src="{{ image.image }}" alt="picture added by user" style="width: 256px"></td>
+                                            </p>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% endif %}
                             </p>
                             <div class="menu_row">

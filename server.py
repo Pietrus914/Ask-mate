@@ -99,7 +99,8 @@ def display_question(question_id):
     comment_headers = ["Submission time", "Message", "Edition counter"]
     question_tag = data_manager.get_tag_by_question_id(question_id)
     # users = data_manager.get_all_users_basic_info()
-
+    question_image = data_manager.get_question_image_by_id(question_id)
+    answers_images = util.get_answers_images(answers)
     response = make_response(render_template("question.html",
                                              username=SESSION_USERNAME,
                                              question=question,
@@ -109,6 +110,8 @@ def display_question(question_id):
                                              comment_headers=comment_headers,
                                              answer_comments=answer_comments,
                                              question_tag=question_tag,
+                                             question_image=question_image,
+                                             answers_images=answers_images
                                              # users=users
                                              ))
     return response
@@ -142,10 +145,21 @@ def add_question_post():
     new_question["vote_number"] = 0
     new_question["user_id"] = session[SESSION_ID]
 
-    uploaded_file = request.files['file']
-    new_question['image'] = swap_image(uploaded_file)
+    uploaded_file = request.files.getlist('file')
 
-    question_id = data_manager.add_question(new_question).get('id')
+    if len(uploaded_file[0].filename) != 0 or len(new_question['image_url']) != 0:
+        new_question['image'] = 1
+        question_id = data_manager.add_question(new_question).get('id')
+        if len(uploaded_file[0].filename) != 0:
+            for file in uploaded_file:
+                data_manager.add_question_image({"question_id": question_id, "image": swap_image(file)})
+        if len(new_question['image_url']) != 0:
+            data_manager.add_question_image({"question_id": question_id, "image": new_question['image_url']})
+
+    else:
+        new_question['image'] = 0
+        question_id = data_manager.add_question(new_question).get('id')
+
     return redirect(url_for("display_question", question_id=question_id))
 
 
@@ -182,9 +196,12 @@ def delete_question(question_id):
     user_id = data_manager.get_user_id_by_activity('question', question_id)
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         answer_pictures_paths = data_manager.get_answer_pictures_paths(question_id)
+        for image in answer_pictures_paths:
+            data_manager.delete_answer_image(image['answer_id'])
         util.delete_all_images(answer_pictures_paths)
 
         question_pictures_paths = data_manager.get_question_pictures_paths(question_id)
+        data_manager.delete_question_image(question_id)
         util.delete_all_images(question_pictures_paths)
 
         if data_manager.has_question_comment(question_id) is not None:
@@ -232,12 +249,19 @@ def add_answer_post(question_id):
     new_answer["vote_number"] = 0
     new_answer["user_id"] = session[SESSION_ID]
 
-    uploaded_file = request.files['file']
-    if uploaded_file.filename != '':
-        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename))
-        new_answer["image"] = os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename)
+    uploaded_file = request.files.getlist('file')
+    if len(uploaded_file[0].filename) != 0 or len(new_answer['image_url']) != 0:
+        new_answer['image'] = 1
+        answer_id = data_manager.add_answer(new_answer).get('id')
+        if len(uploaded_file[0].filename) != 0:
+            for file in uploaded_file:
+                data_manager.add_answer_image({"answer_id": answer_id, "image": swap_image(file)})
+        if len(new_answer['image_url']) != 0:
+            data_manager.add_answer_image({"answer_id": answer_id, "image": new_answer['image_url']})
 
-    answer_id = data_manager.add_answer(new_answer).get('id')
+    else:
+        new_answer['image'] = 0
+        question_id = data_manager.add_answer(new_answer).get('id')
 
     return redirect(url_for("display_question", question_id=question_id, answer_id=answer_id))
 
@@ -278,7 +302,7 @@ def delete_answer(question_id, answer_id):
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         answer_pictures_paths = data_manager.get_answer_id_pictures_paths(answer_id)
         util.delete_all_images(answer_pictures_paths)
-
+        data_manager.delete_answer_image(answer_id)
         if data_manager.has_answer_comment(answer_id) is not None:
             data_manager.delete_comment_for_answer(answer_id)
 
