@@ -261,7 +261,7 @@ def add_answer_post(question_id):
 
     else:
         new_answer['image'] = 0
-        question_id = data_manager.add_answer(new_answer).get('id')
+        answer_id = data_manager.add_answer(new_answer).get('id')
 
     return redirect(url_for("display_question", question_id=question_id, answer_id=answer_id))
 
