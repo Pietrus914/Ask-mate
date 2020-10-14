@@ -496,10 +496,10 @@ def get_tag_id_by_name(cursor: RealDictCursor, tag_name: str):
 
 
 @database_common.connection_handler
-def delete_tag(cursor: RealDictCursor, tag_id: int):
+def delete_tag(cursor: RealDictCursor, tag_id, question_id : int):
     query = f"""
         DELETE FROM question_tag
-        WHERE tag_id = {tag_id} """
+        WHERE tag_id = {tag_id} AND question_id = {question_id} """
     cursor.execute(query)
     return
 
@@ -517,10 +517,10 @@ def get_all_tags(cursor: RealDictCursor):
 @database_common.connection_handler
 def get_tag_to_list(cursor: RealDictCursor):
     query = f"""
-        select (name), count (name)
+        select (name), count (name), t.id
         from tag as t
         inner join question_tag as q on t.id = q.tag_id
-        group by ("name") 
+        group by ("name"), t.id 
         """
     cursor.execute(query)
     return cursor.fetchall()
@@ -541,11 +541,25 @@ def get_tag_from_question(cursor: RealDictCursor, question_id):
 @database_common.connection_handler
 def get_tags_by_order(cursor: RealDictCursor, order: str, direct: str):
     query = f"""
-            select (name), count (name)
+            select (name), count (name), id
             from tag as t
             inner join question_tag as q on t.id = q.tag_id
-            group by ("name") 
+            group by ("name"), id
             ORDER BY {order} {direct}
+            """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_questions_by_tag(cursor: RealDictCursor, tag_id):
+    query = f"""
+            select q.title, q.message, tag.name, q.id
+            from question as q
+            left join question_tag as qt on q.id = qt.question_id
+            join tag ON tag.id = qt.tag_id
+            where tag.id = {tag_id}
+            group by q.title, q.message, tag.name, q.id
             """
     cursor.execute(query)
     return cursor.fetchall()

@@ -22,12 +22,13 @@
                 <tr>
                     {% for key in tag_keys %}
                         <td>
-                            {{tag[key]}}
+                            <a href="{{url_for("tag_questions_search", tag_id=tag["id"]) }}">  {{tag[key]}}</a>
+
                         </td>
 
                     {% endfor %}
                 </tr>
-
+0
             {% endfor %}
         </tbody>
    </table>

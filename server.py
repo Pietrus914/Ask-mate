@@ -13,6 +13,7 @@ headers = ["Title", "Message", "Submission Time", "Views", "Votes"]
 story_keys = ["title", "message", "submission_time", "view_number", "vote_number"]
 tag_headers = ["Tag name", "Number of question"]
 tag_keys = ["name", "count"]
+question_tag = ["title", "message"]
 
 FORM_USERNAME = 'username'
 FORM_PASSWORD = 'password'
@@ -431,12 +432,11 @@ def add_tag(question_id):
         possible_tags = []
         all_tags = data_manager.get_all_tags()
         tags_in_question = data_manager.get_tag_from_question(question_id)
-        print(all_tags)
-        print(tags_in_question)
+
         for tag in all_tags:
             if tag not in tags_in_question:
                 possible_tags.append(tag)
-        print(possible_tags)
+
         response = make_response(render_template("add_tag.html", username=SESSION_USERNAME, question_id=question_id,
                                                  possible_tags=possible_tags))
         return response
@@ -454,7 +454,7 @@ def add_old_tag(question_id):
 @app.route('/tags/<tag_id>/delete')
 def delete_tag(tag_id):
     question_id = data_manager.get_question_id_by_tag_id(tag_id)
-    data_manager.delete_tag(tag_id)
+    data_manager.delete_tag(tag_id, question_id)
 
     return redirect(url_for("display_question", question_id=question_id))
 
@@ -466,9 +466,20 @@ def tags_page():
     if len(request.args) != 0:
         tags = data_manager.get_tags_by_order(request.args.get("order_by"),
                                               request.args.get("order_direction"))
+
     response = make_response(
         render_template("tag_list.html", username=SESSION_USERNAME, tag_headers=tag_headers, tags=tags,
                         tag_keys=tag_keys))
+    return response
+
+
+@app.route("/tags/<tag_id>")
+def tag_questions_search(tag_id):
+
+    questions_by_tag = data_manager.get_questions_by_tag(tag_id)
+
+    response = make_response(
+        render_template("tag_questions.html", username=SESSION_USERNAME, tag_id=tag_id, question_tag=question_tag, questions_by_tag=questions_by_tag))
     return response
 
 
