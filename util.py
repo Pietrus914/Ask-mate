@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 import os
+import data_manager
 
 
 '''function that returns current data & time'''
@@ -29,3 +30,11 @@ def get_difference_of_votes(post_result):
         difference = -1
 
     return difference
+
+
+def get_answers_images(answers):
+    answers_images = {}
+    for answer in answers:
+        if answer['image'] == 1:
+            answers_images[answer['id']] = data_manager.get_answer_image_by_id(answer['id'])
+    return answers_images

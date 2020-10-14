@@ -217,9 +217,10 @@ def update_answer_votes(cursor: RealDictCursor, answer_id: int, difference: int)
 @database_common.connection_handler
 def get_answer_pictures_paths(cursor: RealDictCursor, question_id: int):
     query = f"""
-        SELECT image
-        FROM answer
-        WHERE question_id = {question_id}"""
+        SELECT answer_id, i.image
+        FROM answer_image as i
+        INNER JOIN answer a on a.id = i.answer_id
+        WHERE a.question_id = {question_id}"""
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -228,8 +229,8 @@ def get_answer_pictures_paths(cursor: RealDictCursor, question_id: int):
 def get_answer_id_pictures_paths(cursor: RealDictCursor, answer_id):
     query = f"""
             SELECT image
-            FROM answer
-            WHERE id = {answer_id}"""
+            FROM answer_image
+            WHERE answer_id = {answer_id}"""
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -238,8 +239,8 @@ def get_answer_id_pictures_paths(cursor: RealDictCursor, answer_id):
 def get_question_pictures_paths(cursor: RealDictCursor, question_id: int):
     query = f"""
         SELECT image 
-        FROM question
-        WHERE id = {question_id}"""
+        FROM question_image
+        WHERE question_id = {question_id}"""
     cursor.execute(query)
     return cursor.fetchall()
 
@@ -757,3 +758,59 @@ def get_user_id_by_activity(cursor: RealDictCursor, table, item_id: int):
         WHERE id = {item_id}"""
     cursor.execute(query)
     return cursor.fetchone()['user_id']
+
+
+@database_common.connection_handler
+def add_question_image(cursor: RealDictCursor, new_image: dict) -> dict:
+    query = f"""
+        INSERT INTO question_image (question_id, image)
+        VALUES (%(question_id)s, %(image)s)
+        """
+    cursor.execute(query, new_image)
+
+
+@database_common.connection_handler
+def get_question_image_by_id(cursor: RealDictCursor, question_id: int):
+    query = f"""
+        SELECT image
+        FROM question_image
+        WHERE question_id = {question_id}"""
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def get_answer_image_by_id(cursor: RealDictCursor, answer_id: int):
+    query = f"""
+        SELECT image
+        FROM answer_image
+        WHERE answer_id = {answer_id}"""
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def add_answer_image(cursor: RealDictCursor, new_image: dict) -> dict:
+    query = f"""
+        INSERT INTO answer_image (answer_id, image)
+        VALUES (%(answer_id)s, %(image)s)
+        """
+    cursor.execute(query, new_image)
+
+
+@database_common.connection_handler
+def delete_question_image(cursor: RealDictCursor, question_id: int):
+    query = f"""
+        DELETE FROM question_image
+        WHERE question_id = {question_id}
+        """
+    cursor.execute(query)
+
+
+@database_common.connection_handler
+def delete_answer_image(cursor: RealDictCursor, answer_id: int):
+    query = f"""
+        DELETE FROM answer_image
+        WHERE answer_id = {answer_id}
+        """
+    cursor.execute(query)
