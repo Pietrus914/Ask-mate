@@ -101,8 +101,12 @@ def display_question(question_id):
     # users = data_manager.get_all_users_basic_info()
     question_image = data_manager.get_question_image_by_id(question_id)
     answers_images = util.get_answers_images(answers)
+
+    author_id = data_manager.check_question_author_id(question_id)['user_id']
+
     response = make_response(render_template("question.html",
                                              username=SESSION_USERNAME,
+                                             user_id=SESSION_ID,
                                              question=question,
                                              answers=answers,
                                              answers_headers=answers_headers,
@@ -111,7 +115,9 @@ def display_question(question_id):
                                              answer_comments=answer_comments,
                                              question_tag=question_tag,
                                              question_image=question_image,
-                                             answers_images=answers_images
+                                             answers_images=answers_images,
+                                             author_id=author_id,
+                                             # author=author
                                              # users=users
                                              ))
     return response
@@ -248,6 +254,7 @@ def add_answer_post(question_id):
     new_answer["question_id"] = question_id
     new_answer["vote_number"] = 0
     new_answer["user_id"] = session[SESSION_ID]
+    new_answer["accepted"] = False
 
     uploaded_file = request.files.getlist('file')
     if len(uploaded_file[0].filename) != 0 or len(new_answer['image_url']) != 0:
@@ -330,6 +337,12 @@ def answer_vote(question_id, answer_id, forum_user):
     difference = util.get_difference_of_votes(post_result)
     data_manager.update_answer_votes(answer_id, difference)
     data_manager.gain_reputation_by_question("answer", forum_user, post_result)
+    return redirect(url_for("display_question", question_id=question_id))
+
+@app.route("/question/<question_id>/<answer_id>/post", methods=["POST"])
+def accept_answer(question_id, answer_id):
+    data_manager.toggle_answer_acceptance(question_id,answer_id)
+
     return redirect(url_for("display_question", question_id=question_id))
 
 

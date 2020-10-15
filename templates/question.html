@@ -41,6 +41,7 @@
                         </form>
                     </div>
 
+
                 </div>
 
                 <p class="message">
@@ -154,6 +155,17 @@
                                     <button type="submit"  id="vote_down" name = "vote_answer" value="vote_down"> VOTE DOWN</button>
                                 </form>
                             </div>
+
+                           <div>
+                               <form action="{{ url_for("accept_answer", answer_id=answer.id, question_id=question["id"]) }}" method="post">
+                                  {% if author_id == session[user_id] %}
+                                       <button type="submit" id="accepted_{{ answer.accepted }}" name="acceptance" value="{{ answer.accepted }}"><i class="fas fa-check-square"></i></button>
+                                   {% else %}
+                                       <button type="submit" id="accepted_{{ answer.accepted }}" name="acceptance" value="{{ answer.accepted }}" disabled="disabled"><i class="fas fa-check-square"></i></button>
+                                  {% endif %}
+                               </form>
+                           </div>
+
                         </div>
 
 
