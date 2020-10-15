@@ -24,7 +24,7 @@
                     </div>
 
                     <div>
-                        {% if item.question_id %}
+                        {% if item.question_id != None %}
                         <a href="{{ url_for('display_question', question_id = item.question_id) }}">
                             <h5>{{ item.title }}</h5>
                             <div class="hidden_overflow">{{ item.message }}</div>
