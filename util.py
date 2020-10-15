@@ -1,7 +1,12 @@
 from datetime import datetime as dt
 import os
 import data_manager
+from uuid import uuid4
 
+
+def make_unique(string):
+    ident = uuid4().__str__()[:8]
+    return f"{ident}-{string}"
 
 '''function that returns current data & time'''
 def get_current_date_time():

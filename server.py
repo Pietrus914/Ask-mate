@@ -25,8 +25,9 @@ SESSION_REPUTATION = 'reputation'
 def swap_image(uploaded_file):
     """function to use when user can upload file"""
     if uploaded_file.filename != '':
-        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename))
-        return os.path.join(app.config['UPLOAD_PATH'], uploaded_file.filename)  # question['image'] = ...
+        unique_filename = util.make_unique(uploaded_file.filename)
+        uploaded_file.save(os.path.join(app.config['UPLOAD_PATH'], unique_filename))
+        return os.path.join(app.config['UPLOAD_PATH'], unique_filename)  # question['image'] = ...
 
 
 @app.route("/")
