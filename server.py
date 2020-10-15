@@ -342,8 +342,9 @@ def answer_vote(question_id, answer_id, forum_user):
 
 @app.route("/question/<question_id>/<answer_id>/post", methods=["POST"])
 def accept_answer(question_id, answer_id):
-    data_manager.toggle_answer_acceptance(question_id,answer_id)
-
+    data_manager.toggle_answer_acceptance(question_id, answer_id)
+    answer = data_manager.get_answer_by_id(answer_id)
+    data_manager.gain_reputation_by_acceptance(answer['accepted'], answer['user_id'])
     return redirect(url_for("display_question", question_id=question_id))
 
 
