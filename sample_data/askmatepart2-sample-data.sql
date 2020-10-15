@@ -45,7 +45,8 @@ CREATE TABLE answer (
     question_id integer,
     message text,
     image integer,
-    user_id integer --NOT NULL
+    user_id integer, --NOT NULL
+    accepted boolean
 );
 
 DROP TABLE IF EXISTS public.comment;
@@ -201,18 +202,18 @@ INSERT INTO question VALUES (7, '2020-05-01 10:41:00', 14, 57, 'How do I create 
 SELECT pg_catalog.setval('question_id_seq', 7, true);
 
 
-INSERT INTO answer VALUES (1, '2017-04-28 16:49:00', 4, 1, 'You need to use brackets: my_list = []', 1, 0);
-INSERT INTO answer VALUES (2, '2017-04-25 14:42:00', 35, 1, 'Look it up in the Python docs', 1, 0);
-INSERT INTO answer VALUES (3, '2017-09-01 14:42:00', 1, 3, 'you could start them in the micro wave for 5 or ten minutes then just through them in the smoker to finish, you could wrap them foil if you don''t want the smoke on them, but I don''t know why you wouldn''t good luck', 1, 0);
-INSERT INTO answer VALUES (4, '2017-09-01 20:24:00', 2, 3, 'Rub them down with butter, salt/pepper them, wrap them completely in foil and throw them on the smoker. You''re probably looking at 4 hours of cook time at 250 degree smoker temp.', 0, 0);
-INSERT INTO answer VALUES (5, '2017-10-01 20:24:00', 5, 4, 'Hey, i have the same problem as you. I will put my son and wrestle with him on our bed when i know it is nearly his time to sleep like bout 9plus. And because he always sleep on our bed, he knows when i lift him up to put him in his cot and he cries and so end up will be back on our bed. I have no ides how to stop this cos i think it has been a habit and i think we will have a problem making him sleep alone next time.', 0, 0);
-INSERT INTO answer VALUES (6, '2017-10-01 20:37:00', 2, 4, 'You have to do it the hard way. My mum is a baby sitter, currently looking after 2 kids. She had looked after more than 5 kids and have 4 kids of her own. You have to break the habit. At their bedtime, put them to bed and leave the room. If they are crying, you have to let them cry. The 1st few days you can walk in and look at them at different intervals but do not carry them. Make the intervals longer and longer. It''s really heart breaking at first. But after sometime, they will realise it''s no use crying, they will fall asleep on their own. Most of the time after 1 week you will see the effect.', 0, 1);
-INSERT INTO answer VALUES (7, '2020-04-28 16:49:00', 4, 5, 'Use position: fixed on the div that contains your header. when #content starts off 100px below #header, but as the user scrolls, #header stays in place. Of course it goes without saying that you''ll want to make sure #header has a background so that its content will actually be visible when the two divs overlap.', 1, 1);
+INSERT INTO answer VALUES (1, '2017-04-28 16:49:00', 4, 1, 'You need to use brackets: my_list = []', 1, 0, False);
+INSERT INTO answer VALUES (2, '2017-04-25 14:42:00', 35, 1, 'Look it up in the Python docs', 1, 0, False);
+INSERT INTO answer VALUES (3, '2017-09-01 14:42:00', 1, 3, 'you could start them in the micro wave for 5 or ten minutes then just through them in the smoker to finish, you could wrap them foil if you don''t want the smoke on them, but I don''t know why you wouldn''t good luck', 1, 0, False);
+INSERT INTO answer VALUES (4, '2017-09-01 20:24:00', 2, 3, 'Rub them down with butter, salt/pepper them, wrap them completely in foil and throw them on the smoker. You''re probably looking at 4 hours of cook time at 250 degree smoker temp.', 0, 0, False);
+INSERT INTO answer VALUES (5, '2017-10-01 20:24:00', 5, 4, 'Hey, i have the same problem as you. I will put my son and wrestle with him on our bed when i know it is nearly his time to sleep like bout 9plus. And because he always sleep on our bed, he knows when i lift him up to put him in his cot and he cries and so end up will be back on our bed. I have no ides how to stop this cos i think it has been a habit and i think we will have a problem making him sleep alone next time.', 0, 0, False);
+INSERT INTO answer VALUES (6, '2017-10-01 20:37:00', 2, 4, 'You have to do it the hard way. My mum is a baby sitter, currently looking after 2 kids. She had looked after more than 5 kids and have 4 kids of her own. You have to break the habit. At their bedtime, put them to bed and leave the room. If they are crying, you have to let them cry. The 1st few days you can walk in and look at them at different intervals but do not carry them. Make the intervals longer and longer. It''s really heart breaking at first. But after sometime, they will realise it''s no use crying, they will fall asleep on their own. Most of the time after 1 week you will see the effect.', 0, 1, False);
+INSERT INTO answer VALUES (7, '2020-04-28 16:49:00', 4, 5, 'Use position: fixed on the div that contains your header. when #content starts off 100px below #header, but as the user scrolls, #header stays in place. Of course it goes without saying that you''ll want to make sure #header has a background so that its content will actually be visible when the two divs overlap.', 1, 1, False);
 INSERT INTO answer VALUES (8, '2020-04-25 14:42:00', 35, 6, 'There is currently no way to select the parent of an element in CSS.
 If there was a way to do it, it would be in either of the current CSS selectors specs:
 Selectors Level 3 Spec
 CSS 2.1 Selectors Spec
-That said, the Selectors Level 4 Working Draft includes a :has() pseudo-class that will provide this capability. It will be similar to the jQuery implementation.', 1, 1);
+That said, the Selectors Level 4 Working Draft includes a :has() pseudo-class that will provide this capability. It will be similar to the jQuery implementation.', 1, 1, False);
 
 INSERT INTO answer VALUES (9, '2020-04-15 14:42:00', 35, 7, 'You cannot create an empty folder and then add files to that folder, but rather creation of a folder must happen together with adding of at least a single file. On GitHub you can do it this way:
 Go to the folder inside which you want to create another folder
@@ -221,8 +222,8 @@ On the text field for the file name, first write the folder name you want to cre
 Then type /. This creates a folder
 You can add more folders similarly
 Finally, give the new file a name (for example, .gitkeep which is conventionally used to make Git track otherwise empty folders; it is not a Git feature though)
-Finally, click Commit new file', 0, 1);
-INSERT INTO answer VALUES (10, '2020-04-15 14:42:00', 5, 7, 'Git doesn''t store empty folders. Just make sure there''s a file in the folder like doc/foo.txt and run git add doc or git add doc/foo.txt, and the folder will be added to your local repository once you''ve committed (and appear on GitHub once you''ve pushed it).', 0, 1);
+Finally, click Commit new file', 0, 1, False);
+INSERT INTO answer VALUES (10, '2020-04-15 14:42:00', 5, 7, 'Git doesn''t store empty folders. Just make sure there''s a file in the folder like doc/foo.txt and run git add doc or git add doc/foo.txt, and the folder will be added to your local repository once you''ve committed (and appear on GitHub once you''ve pushed it).', 0, 1, False);
 
 
 SELECT pg_catalog.setval('answer_id_seq', 10, true);

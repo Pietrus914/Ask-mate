@@ -410,8 +410,8 @@ def get_answer_comments_by_question_id(cursor: RealDictCursor, question_id: int)
 @database_common.connection_handler
 def add_answer(cursor: RealDictCursor, new_answer: dict):
     query = f"""
-            INSERT INTO  answer (submission_time, vote_number, question_id, message, image, user_id)
-            VALUES (%(submission_time)s, %(vote_number)s, %(question_id)s, %(message)s, %(image)s, %(user_id)s)
+            INSERT INTO  answer (submission_time, vote_number, question_id, message, image, user_id, accepted)
+            VALUES (%(submission_time)s, %(vote_number)s, %(question_id)s, %(message)s, %(image)s, %(user_id)s, %(accepted)s)
             RETURNING id
             """
     cursor.execute(query, new_answer)
@@ -813,4 +813,26 @@ def delete_answer_image(cursor: RealDictCursor, answer_id: int):
         DELETE FROM answer_image
         WHERE answer_id = {answer_id}
         """
+    cursor.execute(query)
+
+@database_common.connection_handler
+def check_question_author_id(cursor: RealDictCursor, question_id: int) -> int:
+    query = f"""
+        SELECT user_id
+        FROM question
+        WHERE {question_id} = id
+        """
+
+    cursor.execute(query)
+    return cursor.fetchone()
+
+
+@database_common.connection_handler
+def toggle_answer_acceptance(cursor: RealDictCursor, question_id: int, answer_id: int):
+    query = f"""
+        UPDATE answer as a
+        SET accepted = NOT accepted
+        WHERE {answer_id} = a.id AND {question_id} = a.question_id
+        """
+
     cursor.execute(query)

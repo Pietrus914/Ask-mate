@@ -154,7 +154,7 @@ button.search_arrow:hover {
 }
 
 button[type="submit"]:hover, button[type="button"]:hover {
-    font-weight: bold;
+    /*font-weight: bold;*/
     text-decoration: underline;
 }
 
@@ -623,4 +623,12 @@ img {
     color: #c808c5;
     text-shadow: #868585 1px 1px 2px;
     font-size: larger;
+}
+
+button[name='acceptance'] {
+    font-size: 1.4em;
+    color: darkolivegreen;
+}
+#accepted_False {
+    color: darkred;
 }
