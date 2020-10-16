@@ -717,7 +717,7 @@ def get_dict_user_activities(user_id):
 
 
 @database_common.connection_handler
-def gain_reputation_by_question(cursor: RealDictCursor, option: str, forum_user_id: int, post_result: dict):
+def gain_reputation_by_question(cursor: RealDictCursor, option: str, forum_user_id: int, post_result: str):
     if post_result == "vote_up" and option == "question":
         query = f"""
             UPDATE forum_user
@@ -836,3 +836,21 @@ def toggle_answer_acceptance(cursor: RealDictCursor, question_id: int, answer_id
         """
 
     cursor.execute(query)
+
+
+@database_common.connection_handler
+def gain_reputation_by_acceptance(cursor: RealDictCursor, accepted: bool, forum_user_id: int):
+    if accepted:
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation + 15
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
+    else:
+        query = f"""
+            UPDATE forum_user
+            SET reputation = reputation - 15
+            WHERE id = {forum_user_id}
+            """
+        cursor.execute(query)
