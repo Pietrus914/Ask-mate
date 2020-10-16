@@ -594,7 +594,9 @@ def login_user_post():
 
 @app.route('/logout/')
 def logout():
-    session.pop(SESSION_USERNAME, SESSION_ID, SESSION_REPUTATION)
+    session.pop(SESSION_USERNAME, None)
+    session.pop(SESSION_ID, None)
+    session.pop(SESSION_REPUTATION, None)
     return redirect(url_for('main_page'))
 
 
