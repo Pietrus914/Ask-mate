@@ -27,6 +27,21 @@
             <input class="underline" type="text" name="title" id="title" value="{{ question["title"] }}">
             <label for="message">Message:</label>
             <textarea name="message"  id="message">{{ question["message"] }} </textarea>
+                {% if question.image == 1 %}
+                    {% for image in question_image %}
+                        {% if 'http' not in image.image %}
+                            <p>
+                                <img src="{{ url_for('get_img', filename=get_filename(image.image)) }}" alt="picture added by user" >
+                                <a href="{{ url_for("delete_image", question_id = question["id"], filename=get_filename(image.image)) }}"><i class='far'>&#xf2ed</i></a>
+                            </p>
+                        {% else %}
+                            <p>
+                                <img src="{{ image.image }}" alt="picture added by user" style="max-height: 25vw">
+                                <a href="{{ url_for("delete_image", question_id = question["id"], filename=get_filename(image.image)) }}"><i class='far'>&#xf2ed</i></a>
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
 
             <p>Add an image from disk or paste a link:</p>
             <div class="image">

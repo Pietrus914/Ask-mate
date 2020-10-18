@@ -174,12 +174,13 @@ def add_question_post():
 def edit_question_get(question_id):
     user_id = data_manager.get_user_id_by_activity('question', question_id)
     question = data_manager.get_question_by_id(question_id)
+    question_image = data_manager.get_question_image_by_id(question_id)
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         if question is None:
             return redirect(url_for("display_question", question_id=question_id))
         else:
             response = make_response(
-                render_template("add_update_question.html", username=SESSION_USERNAME, question=question))
+                render_template("add_update_question.html", username=SESSION_USERNAME, question=question, question_image=question_image))
             return response
     else:
         flash("Update option is available only for the author!", "warning")
@@ -190,12 +191,33 @@ def edit_question_get(question_id):
 def edit_question_post(question_id):
     edited_question = dict(request.form)
 
-    uploaded_file = request.files['file']
-    edited_question['image'] = swap_image(uploaded_file)
+    uploaded_file = request.files.getlist('file')
 
-    data_manager.update_question(edited_question)
+    if len(uploaded_file[0].filename) != 0 or len(edited_question['image_url']) != 0:
+        edited_question['image'] = 1
+        data_manager.update_question(edited_question)
+        if len(uploaded_file[0].filename) != 0:
+            for file in uploaded_file:
+                data_manager.add_question_image({"question_id": question_id, "image": swap_image(file)})
+        if len(edited_question['image_url']) != 0:
+            data_manager.add_question_image({"question_id": question_id, "image": edited_question['image_url']})
+
+    else:
+        if len(data_manager.get_question_pictures_paths(question_id)) == 0:
+            edited_question['image'] = 0
+            data_manager.update_question(edited_question)
+        else:
+            edited_question['image'] = 1
+            data_manager.update_question(edited_question)
 
     return redirect(url_for("display_question", question_id=question_id))
+
+
+@app.route("/question/<int:question_id>/edit/post/delete_image/<filename>")
+def delete_image(question_id, filename):
+    data_manager.delete_question_image_by_name({"question_id": question_id, "filename": filename})
+    util.delete_all_images([{'image': f"uploads\\{filename}"}])
+    return redirect(url_for('edit_question_get', question_id=question_id))
 
 
 @app.route("/question/<question_id>/delete")
@@ -280,12 +302,12 @@ def edit_answer_get(question_id, answer_id):
     question = data_manager.get_question_by_id(question_id)
     if session.get(FORM_USERNAME) and session[SESSION_ID] == user_id:
         answer = data_manager.get_answer_by_id(answer_id)
-
+        answer_images = util.get_answers_images([answer])
         if answer is None:
             return redirect(url_for("display_question", question_id=question_id))
         else:
             response = make_response(
-                render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer))
+                render_template("add_update_answer.html", username=SESSION_USERNAME, question=question, answer=answer, answer_images=answer_images))
             return response
     else:
         flash("Update option is available only for the author!", "warning")
@@ -296,12 +318,33 @@ def edit_answer_get(question_id, answer_id):
 def edit_answer_post(question_id, answer_id):
     edited_answer = dict(request.form)
 
-    uploaded_file = request.files['file']
-    edited_answer['image'] = swap_image(uploaded_file)
+    uploaded_file = request.files.getlist('file')
 
-    data_manager.update_answer(answer_id, edited_answer)
+    if len(uploaded_file[0].filename) != 0 or len(edited_answer['image_url']) != 0:
+        edited_answer['image'] = 1
+        data_manager.update_answer(answer_id, edited_answer)
+        if len(uploaded_file[0].filename) != 0:
+            for file in uploaded_file:
+                data_manager.add_answer_image({"answer_id": answer_id, "image": swap_image(file)})
+        if len(edited_answer['image_url']) != 0:
+            data_manager.add_answer_image({"answer_id": answer_id, "image": edited_answer['image_url']})
+
+    else:
+        if len(data_manager.get_answer_id_pictures_paths(answer_id)) == 0:
+            edited_answer['image'] = 0
+            data_manager.update_answer(answer_id, edited_answer)
+        else:
+            edited_answer['image'] = 1
+            data_manager.update_answer(answer_id, edited_answer)
 
     return redirect(url_for("display_question", question_id=question_id, answer_id=answer_id))
+
+
+@app.route("/question/<int:question_id>/<int:answer_id>/edit-answer/delete_image/<filename>")
+def delete_image_answer(question_id, answer_id, filename):
+    data_manager.delete_answer_image_by_name_s(({"answer_id": answer_id, "filename": filename}))
+    util.delete_all_images([{'image': f"uploads\\{filename}"}])
+    return redirect(url_for('edit_answer_get', question_id=question_id, answer_id=answer_id))
 
 
 @app.route("/answer/<question_id>/<answer_id>/delete")

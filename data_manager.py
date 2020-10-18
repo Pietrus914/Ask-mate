@@ -854,3 +854,21 @@ def gain_reputation_by_acceptance(cursor: RealDictCursor, accepted: bool, forum_
             WHERE id = {forum_user_id}
             """
         cursor.execute(query)
+
+
+@database_common.connection_handler
+def delete_question_image_by_name(cursor: RealDictCursor, asd: dict):
+    query = f"""
+        DELETE FROM question_image
+        WHERE question_id = {asd['question_id']} and image LIKE '%{asd['filename']}'
+        """
+    cursor.execute(query)
+
+
+@database_common.connection_handler
+def delete_answer_image_by_name_s(cursor: RealDictCursor, asd: dict):
+    query = f"""
+        DELETE FROM answer_image
+        WHERE answer_id = {asd['answer_id']} and image LIKE '%{asd['filename']}'
+        """
+    cursor.execute(query)
