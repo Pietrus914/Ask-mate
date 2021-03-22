@@ -1,4 +1,20 @@
-# AskMate (sprint 2)
+Technology:
+- Python
+- Flask/Jinja
+- PostgreSQL
+- HTML/CSS
+
+Group project (4 people)
+
+My tasks:
+- tag page
+- list of questions from tag
+- connection answer with user
+- preper database
+- merge last sprint
+
+
+# AskMate
 
 ## Story
 
