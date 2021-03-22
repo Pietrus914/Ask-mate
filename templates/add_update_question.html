@@ -1,0 +1,50 @@
+{% extends "index.html" %}
+
+{% block page_title %}
+    {% if question["id"] == None %}
+    Add question
+    {% else %}
+    Update question
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+    <div>
+        {% if question["id"] == None %}
+    {#        <h1>Add new question</h1>#}
+            <form action="{{ url_for("add_question_post") }}" method="post" enctype="multipart/form-data">
+        {% else %}
+    {#        <h1>Update question</h1>#}
+            <form action="{{ url_for("edit_question_post", question_id=question['id']) }}" method="post" enctype="multipart/form-data">
+        {% endif %}
+
+        {% if question["id"] != None %}
+            <input type="hidden" name="id" id="id" value="{{ question["id"] }}">
+        {% endif %}
+
+            <label for="title">Question title:</label>
+            <input class="underline" type="text" name="title" id="title" value="{{ question["title"] }}">
+            <label for="message">Message:</label>
+            <textarea name="message"  id="message">{{ question["message"] }} </textarea>
+
+            <p>Add an image from disk or paste a link:</p>
+            <div class="image">
+                <div class="file">
+                    <label for="file">Choose a file:</label>
+                    <input type="file" name="file" accept=".jpg,.png" multiple>
+                </div>
+                <div class="url">
+                    <label for="image_url">Paste url:</label>
+                    <input class="underline" type="url" name="image_url" id="image" placeholder="https://example.com" pattern="https://.*" > <!--value="{{ question["image"] }}" -->
+                </div>
+            </div>
+
+        {% if question["id"] == None %}
+            <input class="forward" type="submit" value="&rarr; Add question">
+        {% else %}
+            <input class="forward" type="submit" value="&rarr; Update question">
+        {% endif %}
+        </form>
+    </div>
+{% endblock %}
