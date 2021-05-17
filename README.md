@@ -10,7 +10,7 @@ My tasks:
 - tag page
 - list of questions from tag
 - connection answer with user
-- preper database
+- prepere database
 - merge last sprint
 
 
